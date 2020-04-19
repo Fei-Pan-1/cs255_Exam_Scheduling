@@ -63,7 +63,7 @@ print(dmap)
 print(df)
 
 
-# TO_DO:draw complete graph for each set.
+# TO_DO: draw complete graph for each set. Or list all combinations of 2 in each set as edges.
 
 
 '''
