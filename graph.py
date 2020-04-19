@@ -2,6 +2,8 @@ import csv
 import fileinput
 
 import pandas as pd
+from random import seed
+from random import random
 
 # implementation of an undirected graph using Adjacency Lists
 class Vertex:
@@ -38,6 +40,26 @@ class Graph:
         for key in sorted(list(self.vertices.keys())):
             print(key + str(self.vertices[key].neighbors))
 
+   # @staticmethod
+   # def greedy_coloring(graph):
+      #  Matching = {}
+       # for i in range(0, len(graph.vertices)):
+
+    @staticmethod
+    def random_graph(n, p_threshold):
+        seed()
+        g = Graph()
+        for vertex in range(0, n):
+            g.add_vertex(Vertex(str(vertex)))
+
+        for source in range(0, n):
+            for target in range(0, n):
+                #no self loops
+                if source != target and random() < p_threshold:
+                   if source not in g.vertices and source not in g.vertices:
+                        g.add_edge(str(source), str(target))
+        return g
+
 # covert txt file to csv file (add ',')
 input_file = 'dataset/enrolments.txt'
 output = open('dataset/enrolments_out.txt', 'w+')
@@ -59,9 +81,12 @@ df = df.sort_values(by=['Student'])
 dmap = {}
 for row in df.values:
     dmap.setdefault(row[0], set()).add(row[1])
-print(dmap)
-print(df)
+#print(dmap)
+#print(df)
 
+g = Graph.random_graph(5, .2)
+g.print_graph()
+#print(str(len(g.vertices)))
 
 # TO_DO: draw complete graph for each set. Or list all combinations of 2 in each set as edges.
 
