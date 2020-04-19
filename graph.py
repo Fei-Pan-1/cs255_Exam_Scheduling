@@ -38,7 +38,7 @@ class Graph:
         for key in sorted(list(self.vertices.keys())):
             print(key + str(self.vertices[key].neighbors))
 
-
+# covert txt file to csv file (add ',')
 input_file = 'dataset/enrolments.txt'
 output = open('dataset/enrolments_out.txt', 'w+')
 '''
@@ -53,7 +53,7 @@ with output as f:
 read_file = pd.read_csv (r'dataset/enrolments_out.txt')
 read_file.to_csv (r'dataset/enrolments.csv', index=None)
 
-
+# put one student's exams in a set.
 df = pd.read_csv('dataset/enrolments.csv')
 df = df.sort_values(by=['Student'])
 dmap = {}
@@ -62,6 +62,8 @@ for row in df.values:
 print(dmap)
 print(df)
 
+
+# TO_DO:draw complete graph for each set.
 
 
 '''
