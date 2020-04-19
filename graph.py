@@ -40,10 +40,29 @@ class Graph:
         for key in sorted(list(self.vertices.keys())):
             print(key + str(self.vertices[key].neighbors))
 
-   # @staticmethod
-   # def greedy_coloring(graph):
-      #  Matching = {}
-       # for i in range(0, len(graph.vertices)):
+
+    @staticmethod
+    def greedy_coloring(graph):
+        coloring = {}
+        color = 0
+        vertices = graph.vertices
+
+        for v in vertices:
+            # the case where the graph is disconnected and v
+            # has no neighbors
+            if len(vertices[v].neighbors) <= 0:
+                coloring[v] = color
+
+            for neighbor in vertices[v].neighbors:
+                if neighbor in coloring and coloring[neighbor] == color:
+                    #this is an adjacent node with same color
+                    # use next color
+                    color += 1
+                    coloring[v] = color
+                else:
+                    coloring[v] = color
+        return coloring
+
 
     @staticmethod
     def random_graph(n, p_threshold):
@@ -86,6 +105,8 @@ for row in df.values:
 
 g = Graph.random_graph(5, .2)
 g.print_graph()
+coloring = Graph.greedy_coloring(g)
+print(coloring)
 #print(str(len(g.vertices)))
 
 # TO_DO: draw complete graph for each set. Or list all combinations of 2 in each set as edges.
