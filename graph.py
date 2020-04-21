@@ -1,9 +1,3 @@
-import csv
-import fileinput
-import os
-import stat
-
-import pandas as pd
 from random import seed
 from random import random
 
@@ -112,38 +106,6 @@ class Graph:
         return g
 
 
-def create_graph():
-    g = Graph()
-
-    return g
-
-
-
-# covert txt file to csv file (add ',')
-input_file = 'dataset/enrolments.txt'
-output = open('dataset/enrolments_out.txt', 'w+')
-'''
-input_file = 'testdata/enrolments_test.txt'
-output = open('testdata/enrolments_test_out.txt', 'w+')
-'''
-with output as f:
-    for line in fileinput.input(input_file):
-        line = line.split(None,2)
-        f.write(','.join(line))
-        f.write('\n')
-read_file = pd.read_csv (r'dataset/enrolments_out.txt')
-read_file.to_csv (r'dataset/enrolments.csv', index=None)
-
-# put one student's exams in a set.
-df = pd.read_csv('dataset/enrolments.csv')
-df = df.sort_values(by=['Student'])
-dmap = {}
-for row in df.values:
-    dmap.setdefault(row[0], set()).add(row[1])
-#print(dmap)
-#print(df)
-
-
 g = Graph.random_graph(5, .2)
 g.print_graph()
 coloring = Graph.greedy_coloring(g)
@@ -152,21 +114,3 @@ print('Greedy Solution: \n',coloring)
 coloring1 = Graph.welsh_powell(g)
 print('Welsh Powell Solution: \n', coloring1)
 
-# TO_DO: draw complete graph for each set. Or list all combinations of 2 in each set as edges.
-
-
-'''
-g = Graph()
-# print(str(len(g.vertices)))
-a = Vertex('A')
-g.add_vertex(a)
-g.add_vertex(Vertex('B'))
-for i in range(ord('A'), ord('K')):
-    g.add_vertex(Vertex(chr(i)))
-
-edges = ['AB', 'AE', 'BF', 'CG', 'DE', 'DH', 'EH', 'FG', 'FI', 'FJ', 'GJ', 'HI']
-for edge in edges:
-    g.add_edge(edge[:1], edge[1:])
-
-g.print_graph()
-'''
