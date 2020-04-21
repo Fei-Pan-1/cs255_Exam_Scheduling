@@ -56,7 +56,7 @@ class Graph:
 
             for neighbor in vertices[v].neighbors:
                 if neighbor in coloring and coloring[neighbor] == color:
-                    #this is an adjacent node with same color
+                    # this is an adjacent node with same color
                     # use next color
                     color += 1
                     coloring[v] = color
@@ -67,27 +67,33 @@ class Graph:
     # implementation of welsh_powell algorithm
     def welsh_powell(graph):
         coloring_dict = {}
-        color = 0
         vertices = graph.vertices
 
+        # sort vertices according to the decreasing number of their neighbors
         sorted_vertices = sorted(vertices.items(), key=lambda kv: len(kv[1].neighbors), reverse = True)
-        #print('sorted', sorted_vertices)
+        #print(sorted_vertices)
 
-        uncolored_vertices = sorted_vertices
-        for v in uncolored_vertices:
-            if v == sorted_vertices[0]:
-                coloring_dict[v[0]] = 0
-            else:
-                color += 1
-                coloring_dict[v[0]] = color
-            uncolored_vertices.remove(v)
-            #print('uncolored_vertices:', uncolored_vertices)
-
-            for u in uncolored_vertices:
-                if u not in v[1].neighbors:
-                    coloring_dict[u[0]] = color
-                    uncolored_vertices.remove(u)
-        #print(coloring_dict)
+        color = -1
+        for v in sorted_vertices:
+            if v[0] in coloring_dict:
+                continue
+            # assign a new color
+            color += 1
+            coloring_dict[v[0]] = color
+            colored = [v]
+            for u in sorted_vertices:
+                if u[0] not in coloring_dict:
+                    #print('checking', u)
+                    isNeighborOfColored = False
+                    for w in colored:
+                        if u[0] in w[1].neighbors:
+                            #print(u[0], w[0])
+                            isNeighborOfColored = True
+                            break
+                    if not isNeighborOfColored:
+                        coloring_dict[u[0]] = color
+                        #print('color', u[0], 'to', color)
+                        colored.append(u)
         return coloring_dict
 
     @staticmethod
