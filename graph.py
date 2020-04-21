@@ -1,5 +1,7 @@
 import csv
 import fileinput
+import os
+import stat
 
 import pandas as pd
 from random import seed
@@ -29,7 +31,6 @@ class Graph:
 
     def add_edge(self, u, v):
         if u in self.vertices and v in self.vertices:
-            # my YouTube video shows a silly for loop here, but this is a much faster way to do it
             self.vertices[u].add_neighbor(v)
             self.vertices[v].add_neighbor(u)
             return True
@@ -63,6 +64,31 @@ class Graph:
                     coloring[v] = color
         return coloring
 
+    # implementation of welsh_powell algorithm
+    def welsh_powell(graph):
+        coloring_dict = {}
+        color = 0
+        vertices = graph.vertices
+
+        sorted_vertices = sorted(vertices.items(), key=lambda kv: len(kv[1].neighbors), reverse = True)
+        #print('sorted', sorted_vertices)
+
+        uncolored_vertices = sorted_vertices
+        for v in uncolored_vertices:
+            if v == sorted_vertices[0]:
+                coloring_dict[v[0]] = 0
+            else:
+                color += 1
+                coloring_dict[v[0]] = color
+            uncolored_vertices.remove(v)
+            #print('uncolored_vertices:', uncolored_vertices)
+
+            for u in uncolored_vertices:
+                if u not in v[1].neighbors:
+                    coloring_dict[u[0]] = color
+                    uncolored_vertices.remove(u)
+        #print(coloring_dict)
+        return coloring_dict
 
     @staticmethod
     def random_graph(n, p_threshold):
@@ -78,6 +104,14 @@ class Graph:
                    if source not in g.vertices and source not in g.vertices:
                         g.add_edge(str(source), str(target))
         return g
+
+
+def create_graph():
+    g = Graph()
+
+    return g
+
+
 
 # covert txt file to csv file (add ',')
 input_file = 'dataset/enrolments.txt'
@@ -103,11 +137,14 @@ for row in df.values:
 #print(dmap)
 #print(df)
 
+
 g = Graph.random_graph(5, .2)
 g.print_graph()
 coloring = Graph.greedy_coloring(g)
-print(coloring)
+print('Greedy Solution: \n',coloring)
 #print(str(len(g.vertices)))
+coloring1 = Graph.welsh_powell(g)
+print('Welsh Powell Solution: \n', coloring1)
 
 # TO_DO: draw complete graph for each set. Or list all combinations of 2 in each set as edges.
 
