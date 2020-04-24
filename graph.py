@@ -43,8 +43,17 @@ class Graph:
 
     @staticmethod
     def genetic_algorithm(graph):
-        genenetic = GeneAlg(graph, 50, .2, .2, 4, 10)
-        genenetic.create_start_population()
+        #parameters from paper
+        mutation_rate = 1.0
+        crossover_rate = 1.0
+        population_size = 50
+        max_epochs = 20000
+
+        #worst case, every vertex needs a color
+        colors = len(graph.vertices) 
+
+        genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
+        genenetic.create_initial_population()
         print(genenetic.genomes[0].chromosome)
 
     @staticmethod

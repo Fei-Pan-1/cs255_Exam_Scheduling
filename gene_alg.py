@@ -32,7 +32,7 @@ class GeneAlg:
             self.generation = 0
             self.MAX_EPOCHS = max_epochs
 
-    def create_start_population(self):
+    def create_initial_population(self):
         self.genomes.clear()
 
         for i in range(0, self.population_size):
