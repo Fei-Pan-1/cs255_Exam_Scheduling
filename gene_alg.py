@@ -36,7 +36,7 @@ class GeneAlg:
             self.graph = graph
 
             self.fittest_genome = 0
-            self.fittest_score = 0
+            self.fittest_score = self.chromosome_length
             self.second_fittest_genome = 0
             self.generation = 0
             self.MAX_EPOCHS = max_epochs
@@ -50,11 +50,11 @@ class GeneAlg:
         self.generation = 0
         self.fittest_genome = 0
         self.second_fittest_genome = 0
-        self.fittest_score = 0
+        self.fittest_score = self.chromosome_length
 
 
-    def max(genome1, genome2):
-        if(genome1.fitness > genome2):
+    def max_fitness(self, genome1, genome2):
+        if(genome1.fitness < genome2.fitness):
             return genome1
         return genome2
 
@@ -64,11 +64,11 @@ class GeneAlg:
     def parent_selection1(self):
         tmp_parent1 = self.random_genome()
         tmp_parent2 = self.random_genome()
-        parent1 = max(tmp_parent1, tmp_parent2)
+        parent1 = self.max_fitness(tmp_parent1, tmp_parent2)
 
         tmp_parent1 = self.random_genome()
         tmp_parent2 = self.random_genome()
-        parent2 = max(tmp_parent1, tmp_parent2)
+        parent2 = self.max_fitness(tmp_parent1, tmp_parent2)
 
         return parent1, parent2
 
@@ -121,7 +121,6 @@ class GeneAlg:
         neighbors = self.graph.neighbors_of(vertex)
 
         for neighbor in neighbors:
-            #print("asdfasdfasfasdfsadfa"+neighbor)
             if(coloring[vertex] == coloring[neighbor.target]):
                 matchings.append(neighbor.target)
         return matchings
@@ -130,7 +129,7 @@ class GeneAlg:
 # of a given vertex
     def available_colors(self, vertex, adjacent_colors):
         valid_colors = list()
-        neighbors = graph.neighbors_of(vertex)
+        neighbors = self.graph.neighbors_of(vertex)
         
 
         for color in range(0, self.gene_length):
@@ -143,12 +142,12 @@ class GeneAlg:
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
             for vertex in range(len(chromosome)):
-                if(is_color_matching(vertex, chromosome)):
+                if(self.is_color_matching(vertex, chromosome)):
                     # we have neighbors with the same color
                     # get a list of available colors
-                    valid_colors = available_colors(vertex, chromosome)
+                    valid_colors = self.available_colors(vertex, chromosome)
                     # assign vertex to valid random color
-                    genome.chromosome[vertex] = valid_colors[randint(0, len(valid_colors))]
+                    genome.chromosome[vertex] = valid_colors[randint(0, len(valid_colors)-1)]
         return genome
 
 
@@ -173,23 +172,24 @@ class GeneAlg:
                 bad_edges += len(matching_verticies)
             self.genomes[i].fitness = bad_edges
             
-            if(self.genomes[i].fitness > self.fittest_genome):
+            if(self.genomes[i].fitness < self.fittest_genome):
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
                 self.fittest_score = self.genomes[i].fitness
+
+        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
         
     def epoch(self):
         # constant decided by paper through expermimentation
         SELECTION_MUTATION_THRESHOLD = 4
-        fittest_score = self.genomes[self.fittest_genome].fitness
         next_generation = list()
 
         self.update_fitness_scores()
 
         noobs = 0
         while(noobs < self.population_size):
-            if(fittest_score > 4):
+            if(self.fittest_score > 4):
                 parent1, parent2 = self.parent_selection1()
                 child1 = self.crossover(parent1, parent2)
                 child1 = self.mutation1(child1)
@@ -212,7 +212,6 @@ class GeneAlg:
 
         self.genomes = next_generation
         self.generation += 1
-        print(self.generation)
 
 #TODO: Wisdom of the crowds
 
