@@ -67,8 +67,8 @@ class GeneAlg:
         tmp_parent2 = self.random_genome()
         parent1 = max(tmp_parent1, tmp_parent2)
 
-        tmp_parent1 = self.genomes[randint(0, self.population_size-1)]
-        tmp_parent2 = self.genomes[randint(0, self.population_size-1)]
+        tmp_parent1 = self.random_genome()
+        tmp_parent2 = self.random_genome()
         parent2 = max(tmp_parent1, tmp_parent2)
 
         return parent1, parent2
