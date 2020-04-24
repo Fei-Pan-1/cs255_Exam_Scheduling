@@ -8,10 +8,19 @@ class Genome:
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
         self.chromosome = list()
-        self.fitness = 0.0
+        self.fitness = 0
 
         for color in range(0, n_vertices):
             self.chromosome.append(randint(0, n_colors))
+
+    def to_string(self):
+        result = "fitness: " + str(self.fitness) + "\n"
+        result = result + "Chromosome: "
+
+        for i in range(0, len(self.chromosome)):
+            result = result + str(i) + " "
+
+        return result
 
 class GeneAlg:
     def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
@@ -85,12 +94,11 @@ class GeneAlg:
         crossover_point = randint(0, self.chromosome_length)
         child = Genome(self.chromosome_length, self.gene_length)
 
-        #range is (inclusive, exclusive)
-        for i in range(0, crossover_point+1):
-            child.chromosome[i] = parent1.chromosome[i]
-
-        for i in range(crossover_point+2, self.chromosome_length):
-            child.chromosome[i] = parent2[i]
+        for i in range(0, self.chromosome_length):
+            if(i <= crossover_point):
+                child.chromosome[i] = parent1.chromosome[i]
+            else:
+                child.chromosome[i] = parent2.chromosome[i]
 
         return child
 
@@ -99,10 +107,9 @@ class GeneAlg:
 #   its neighbors.
 
     def is_color_matching(self, vertex, coloring):
-
-        neighbors = graph.neighbors_of(vertex)
+        neighbors = self.graph.neighbors_of(vertex)
         for neighbor in neighbors:
-            if(coloring[vertex] == coloring[neighbor.index]):
+            if(coloring[vertex] == coloring[neighbor.target]):
                 return True
         return False
 
@@ -115,8 +122,8 @@ class GeneAlg:
 
         for neighbor in neighbors:
             #print("asdfasdfasfasdfsadfa"+neighbor)
-            if(coloring[vertex] == coloring[neighbor.index]):
-                matchings.append(neighbor.index)
+            if(coloring[vertex] == coloring[neighbor.target]):
+                matchings.append(neighbor.target)
         return matchings
 
 # creates a list of colors not used by neighbors 
@@ -149,8 +156,8 @@ class GeneAlg:
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
             for vertex in range(len(chromosome)):
-                if(is_color_matching(vertex, chromosome)):
-                    genome.chromosome[vertex] = randint(0, gene_length)
+                if(self.is_color_matching(vertex, chromosome)):
+                    genome.chromosome[vertex] = randint(0, self.gene_length)
         return genome
 
 # The fitness score is defined as the number of bad edges, where
@@ -161,15 +168,15 @@ class GeneAlg:
             bad_edges = 0
             chromosome = self.genomes[i].chromosome
 
-            for vertex in chromosome:
+            for vertex in range(0, len(chromosome)):
                 matching_verticies = self.color_matchings(vertex, chromosome)
                 bad_edges += len(matching_verticies)
             self.genomes[i].fitness = bad_edges
             
-            if(genome[i].fitness > fittest_so_far):
+            if(self.genomes[i].fitness > self.fittest_genome):
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
-                self.fittest_score = genome[i].fitness
+                self.fittest_score = self.genomes[i].fitness
 
         
     def epoch(self):
@@ -205,16 +212,17 @@ class GeneAlg:
 
         self.genomes = next_generation
         self.generation += 1
+        print(self.generation)
 
 #TODO: Wisdom of the crowds
 
     def run(self):
-        while(self.fittest_score != 0 or self.generation <= self.MAX_EPOCHS):
+        while(self.fittest_score != 0 and self.generation <= self.MAX_EPOCHS):
             self.epoch()
 
-        if(self.generation == MAX_EPOCHS and self.fittest_score != 0):
+        if(self.generation == self.MAX_EPOCHS and self.fittest_score != 0):
             print("Failed to converge in "+ self.MAX_EPOCHS + " epochs")
             #wisdom of the crouds
 
-        return self.genomes[fittest_genome]
+        return self.genomes[self.fittest_genome]
 

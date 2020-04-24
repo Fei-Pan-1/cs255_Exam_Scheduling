@@ -62,6 +62,9 @@ class Graph:
     def vertex(self, v):
         return self.adj_list[v]
 
+    def neighbors_of(self, v):
+        return self.adj_list[v].neighbors()
+
     def to_string(self):
         result = ""
         for vertex in self.adj_list:
@@ -145,7 +148,7 @@ class Graph:
         max_epochs = 20000
 
         #worst case, every vertex needs a color
-        colors = len(graph.vertices) 
+        colors = len(graph.vertices()) 
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
         genenetic.create_initial_population()
@@ -163,7 +166,7 @@ print(g.to_string())
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
 #print(g.vertices)
-#print(Graph.genetic_algorithm(g))
+print(Graph.genetic_algorithm(g).to_string())
 
 
 
