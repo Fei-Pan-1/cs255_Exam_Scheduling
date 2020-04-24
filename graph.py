@@ -1,56 +1,17 @@
 from random import seed
 from random import random
 from gene_alg import GeneAlg
+import operator
 
 # implementation of an undirected graph using Adjacency Lists
-"""
-class Vertex:
-    def __init__(self, n, index):
-        self.name = n
-        self.index = index
-        self.neighbors = list()
 
-    def add_neighbor(self, v):
-        if v not in self.neighbors:
-            self.neighbors.append(v)
-            self.neighbors.sort()
-
-
-class Graph:
-    vertices = {}
-
-    def add_vertex(self, vertex):
-        if isinstance(vertex, Vertex) and vertex.name not in self.vertices:
-            self.vertices[vertex.name] = vertex
-            return True
-        else:
-            return False
-
-    def add_edge(self, u, v):
-        if u in self.vertices and v in self.vertices:
-            self.vertices[u].add_neighbor(v)
-            self.vertices[v].add_neighbor(u)
-            return True
-        else:
-            return False
-
-    def print_graph(self):
-        for key in sorted(list(self.vertices.keys())):
-            print(key + str(self.vertices[key].neighbors))
-
-#TODO: will need to adjust this to work with exams
-    def neighbors_of(self, i_vertex):
-        for v in self.vertices:
-            print(v)
-        return self.vertices[str(i_vertex)].neighbors
-"""
 class EdgeNode:
-   def __init__(self, source, target):
+    def __init__(self, source, target):
        self.source = source
        self.target = target
 
     def to_string(self):
-        return " " + target
+        return " " + str(target)
 
 class VertexNode:
     def __init__(self, v):
@@ -58,43 +19,56 @@ class VertexNode:
         self.edges = list()
 
     def add_edge(self, u):
-        edges.append(u)
+        self.edges.append(u)
 
     def contains(self, target):
-        for edge in edges:
+        for edge in self.edges:
             if(edge.target == target):
                 return True
         return False
 
     def to_string(self): 
-        result = self.vertex + ": "
+        result = str(self.vertex) + ": "
         for edge in self.edges:
-            result = result + edge.target + " "
-
+            result = result + str(edge.target) + " "
         return result
 
 
-class Graph
+class Graph:
     def __init__(self, n):
-        self.adjList = list()
+        self.adj_list = list()
+        self.n_verticies = n
+
         for i in range(0, n):
-            self.adjList.append(VertexNode(i))
+            self.adj_list.append(VertexNode(i))
 
     def vertices(self):
-        return self.adjList
+        return self.adj_list
 
-    def add_edge(source, target):
-        self.adjList[source].add_edge(EdgeNode(source, target))
+    def add_edge(self, source, target):
+        self.adj_list[source].add_edge(EdgeNode(source, target))
+        self.adj_list[target].add_edge(EdgeNode(target, source))
 
-    def vertex(v)
-        return self.adjList[v]
+    def vertex(self, v):
+        return self.adj_list[v]
 
-    def to_string():
+    def to_string(self):
         result = ""
-        for vertex in adjList:
+        for vertex in self.adj_list:
             result = result + vertex.to_string() + "\n"
         return result
 
+    @staticmethod
+    def random_graph(n, probability_threshold):
+        graph = Graph(n)
+
+        for v1 in range(0, n):
+            for v2 in range(0, n):
+                if(v1 != v2 and random() < probability_threshold):
+                    if(operator.not_(graph.vertex(v1).contains(v2)) and operator.not_(graph.vertex(v2).contains(v1))):
+                        graph.add_edge(v1, v2)
+        return graph
+"""
     @staticmethod
     def genetic_algorithm(graph):
         #parameters from paper
@@ -164,7 +138,8 @@ class Graph
                         #print('color', u[0], 'to', color)
                         colored.append(u)
         return coloring_dict
-"""
+
+
     @staticmethod
     def random_graph(n, p_threshold):
         seed()
@@ -182,6 +157,7 @@ class Graph
 """
 
 g = Graph.random_graph(5, .2)
+print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
 #print('Greedy Solution: \n',coloring)
@@ -189,5 +165,5 @@ g = Graph.random_graph(5, .2)
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
 #print(g.vertices)
-print(Graph.genetic_algorithm(g))
+#print(Graph.genetic_algorithm(g))
 
