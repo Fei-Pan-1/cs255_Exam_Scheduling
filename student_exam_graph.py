@@ -1,5 +1,7 @@
 from itertools import combinations
 import pandas as pd
+from graph import Graph
+from graph import Vertex
 
 # put each student and his exams in a dictionary.
 df = pd.read_csv('dataset/processed_data/enrolments_with_id.csv')
@@ -14,8 +16,23 @@ print(dmap)
 edges = []
 for key in dmap:
     exams_each_student = list(dmap[key])
-    # print(exams_each_student)
-    lst = list(combinations(exams_each_student, 2))
-    edges.append(lst)
+    print(exams_each_student)
+    if len(exams_each_student) >= 2:
+        lst = list(combinations(exams_each_student, 2))
+        for l in lst:
+            edges.append(l)
 
 print(len(edges), "edges: ", edges)
+
+graph = Graph()
+for e in edges:
+    u_s, v_s = e
+    u = Vertex(u_s)
+    v = Vertex(v_s)
+    # u.add_neighbor(v)
+    # v.add_neighbor(u)
+    # graph.add_vertex(u)
+    # graph.add_vertex(v)
+    # graph.add_edge(u, v)
+
+graph.print_graph()
