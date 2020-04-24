@@ -24,8 +24,9 @@ for key in dmap:
 
 print(len(edges), "edges: ", edges)
 df_edges = pd.DataFrame(edges, columns=['exam1', 'exam2'])
+df_edges = df_edges.sort_values('exam1')
 print(df_edges)
-df_edges.to_csv('dataset/processed_data/edges.csv', index=False)
+#df_edges.to_csv('dataset/processed_data/edges.csv', index=False)
 
 graph = Graph()
 for e in edges:
