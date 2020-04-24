@@ -54,7 +54,8 @@ class Graph:
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
         genenetic.create_initial_population()
-        print(genenetic.genomes[0].chromosome)
+        coloring = genenetic.run()
+        return coloring
 
     @staticmethod
     def greedy_coloring(graph):
@@ -134,5 +135,5 @@ g = Graph.random_graph(5, .2)
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
 
-Graph.genetic_algorithm(g)
+print(Graph.genetic_algorithm(g))
 
