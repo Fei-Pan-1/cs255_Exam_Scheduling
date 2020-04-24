@@ -106,11 +106,14 @@ class Graph:
         return g
 
 
-g = Graph.random_graph(5, .2)
-g.print_graph()
-coloring = Graph.greedy_coloring(g)
-print('Greedy Solution: \n',coloring)
-#print(str(len(g.vertices)))
-coloring1 = Graph.welsh_powell(g)
-print('Welsh Powell Solution: \n', coloring1)
+def main():
+    g = Graph.random_graph(5, .2)
+    g.print_graph()
+    coloring = Graph.greedy_coloring(g)
+    print('Greedy Solution: \n',coloring)
+    #print(str(len(g.vertices)))
+    coloring1 = Graph.welsh_powell(g)
+    print('Welsh Powell Solution: \n', coloring1)
 
+if __name__ == '__main__':
+    main()
