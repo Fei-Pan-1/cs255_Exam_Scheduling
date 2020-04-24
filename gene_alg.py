@@ -164,14 +164,15 @@ class GeneAlg:
 
 
     def mutation1(self, genome):
-        chromosome = genome.chromosome
-        for vertex in range(len(chromosome)):
-            if(is_color_matching(vertex, chromosome)):
-                # we have neighbors with the same color
-                # get a list of available colors
-                valid_colors = available_colors(vertex, chromosome)
-                # assign vertex to valid random color
-                genome.chromosome[vertex] = valid_colors[randint(0, len(valid_colors))]
+        if(random() < self.mutation_rate):
+            chromosome = genome.chromosome
+            for vertex in range(len(chromosome)):
+                if(is_color_matching(vertex, chromosome)):
+                    # we have neighbors with the same color
+                    # get a list of available colors
+                    valid_colors = available_colors(vertex, chromosome)
+                    # assign vertex to valid random color
+                    genome.chromosome[vertex] = valid_colors[randint(0, len(valid_colors))]
         return genome
 
 
@@ -187,10 +188,11 @@ chromosome.setColor(vertex, newColor)
 return chromosome;
 """
     def mutation2(self, genome):
-        chromosome = genome.chromosome
-        for vertex in range(len(chromosome)):
-            if(is_color_matching(vertex, chromosome)):
-                genome.chromosome[vertex] = randint(0, gene_length)
+        if(random() < self.mutation_rate):
+            chromosome = genome.chromosome
+            for vertex in range(len(chromosome)):
+                if(is_color_matching(vertex, chromosome)):
+                    genome.chromosome[vertex] = randint(0, gene_length)
         return genome
 
     """
@@ -248,6 +250,8 @@ return chromosome;
         self.genomes = next_generation
         self.generation += 1
 
+#TODO: Wisdom of the crowds
+
     def run(self):
         while(self.fittest_score != 0 or self.generation <= MAX_EPOCHS):
             self.epoch()
@@ -257,3 +261,4 @@ return chromosome;
             #wisdom of the crouds
 
         return self.genomes[fittest_genome]
+
