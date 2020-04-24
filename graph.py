@@ -38,8 +38,8 @@ class Graph:
             print(key + str(self.vertices[key].neighbors))
 
 #TODO: will need to adjust this to work with exams
-    def neighbors_of(i_vertex):
-        return graph.vertices[i_vertex].neighbors
+    def neighbors_of(self, i_vertex):
+        return self.vertices[i_vertex].neighbors
 
     @staticmethod
     def genetic_algorithm(graph):

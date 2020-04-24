@@ -127,7 +127,7 @@ class GeneAlg:
     """
     def color_matchings(self, vertex, coloring):
         matchings = list()
-        neighbors = graph.neighbors_of(vertex)
+        neighbors = self.graph.neighbors_of(vertex)
 
         for neighbor in neighbors:
             if(coloring[vertex] == coloring[neighbor.index]):
@@ -201,14 +201,14 @@ class GeneAlg:
         color.
     """
     def update_fitness_scores(self):
-        for i in len(self.genomes):
+        for i in range(0, len(self.genomes)):
             bad_edges = 0
-            chromosome = genome[i].chromosome
+            chromosome = self.genomes[i].chromosome
 
             for vertex in chromosome:
                 matching_verticies = self.color_matchings(vertex, chromosome)
                 bad_edges += len(matching_verticies)
-            genome[i].fitness = bad_edges
+            self.genomes[i].fitness = bad_edges
             
             if(genome[i].fitness > fittest_so_far):
                 self.second_fittest_genome = self.fittest_genome
@@ -253,7 +253,7 @@ class GeneAlg:
 #TODO: Wisdom of the crowds
 
     def run(self):
-        while(self.fittest_score != 0 or self.generation <= MAX_EPOCHS):
+        while(self.fittest_score != 0 or self.generation <= self.MAX_EPOCHS):
             self.epoch()
 
         if(self.generation == MAX_EPOCHS and self.fittest_score != 0):
