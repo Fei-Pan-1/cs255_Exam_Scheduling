@@ -21,7 +21,7 @@ class GeneAlg:
             self.crossover_rate = cross_rate
             self.mutation_rate = mut_rate
             # number of vertices
-            self.chromosome_length = len(graph.vertices)
+            self.chromosome_length = len(graph.vertices())
             # number of colors
             self.gene_length = gene_length
             self.graph = graph
@@ -43,17 +43,7 @@ class GeneAlg:
         self.second_fittest_genome = 0
         self.fittest_score = 0
 
-        """ 
-        def parent_selection_1(self):
-            tempParents = two randomly selected chromosomes from the
-                population;
-            parent1 = the fitter of tempParents;
 
-            tempParents = two randomly selected chromosomes from the
-                population;
-            parent2 = the fitter of tempParents;
-            return parent1, parent2;
-        """
     def max(genome1, genome2):
         if(genome1.fitness > genome2):
             return genome1
@@ -73,24 +63,20 @@ class GeneAlg:
 
         return parent1, parent2
 
-    """
-        parent1 = the top performing chromosome;
-        parent2 = the top performing chromosome;
-        return parent1, parent2;
-    """
+#   parent1 = the top performing chromosome;
+#   parent2 = the top performing chromosome;
+
     def parent_selection2(self):
         parent1 = self.genomes[self.fittest_genome]
         parent2 = self.genomes[self.second_fittest_genome]
 
         return parent1, parent2
 
-    """
-        crosspoint = random point along a chromosome;
-        child = colors up to and including crosspoint from parent 1 +
-        colors after crosspoint to the end of the chromosome from
-            parent2;
-        return child;
-    """
+#       crosspoint = random point along a chromosome;
+#       child = colors up to and including crosspoint from parent 1 +
+#       colors after crosspoint to the end of the chromosome from
+#       parent2;
+
     def crossover(self, parent1, parent2):
         if((random() > self.crossover_rate) and (parent1 != parent1)):
             #don't corossover
@@ -109,10 +95,9 @@ class GeneAlg:
         return child
 
 
-    """
-        Checks if a vertex has a matching color with any of 
-        its neighbors.
-    """
+#   Checks if a vertex has a matching color with any of 
+#   its neighbors.
+
     def is_color_matching(self, vertex, coloring):
 
         neighbors = graph.neighbors_of(vertex)
@@ -121,10 +106,9 @@ class GeneAlg:
                 return True
         return False
 
-    """
-        creates a list of vertices whos colors match with 
-        a given vertex
-    """
+#   creates a list of vertices whos colors match with 
+#   a given vertex
+
     def color_matchings(self, vertex, coloring):
         matchings = list()
         neighbors = self.graph.neighbors_of(vertex)
@@ -135,10 +119,8 @@ class GeneAlg:
                 matchings.append(neighbor.index)
         return matchings
 
-    """
-        creates a list of colors not used by neighbors 
-        of a given vertex
-    """
+# creates a list of colors not used by neighbors 
+# of a given vertex
     def available_colors(self, vertex, adjacent_colors):
         valid_colors = list()
         neighbors = graph.neighbors_of(vertex)
@@ -150,20 +132,6 @@ class GeneAlg:
         return valid_colors
 
 
-    """
-        Algorithm5: mutation1:
-            define: chromosome, allColors, adjacentColors, validColors,
-                newColor;
-            for each(vertex in chromosome) {
-                if (vertex has the same color as an adjacent vertex) {
-                    adjacentColors = all adjacent colors;
-                    validColors = allColors – adjacentColors;
-                    newColor = random color from validColors;
-                    chromosome.setColor(vertex, newColor)
-                }
-            }
-        return chromosome;
-    """
     def mutation1(self, genome):
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
@@ -177,17 +145,6 @@ class GeneAlg:
         return genome
 
 
-    """
-    Algorithm6: mutation2:
-        define: chromosome, allColors
-            for each(vertex in chromosome) {
-                if (vertex has the same color as an adjacent vertex) {
-                    newColor = random color from allColors;
-                    chromosome.setColor(vertex, newColor)
-                }
-            }
-        return chromosome;
-"""
     def mutation2(self, genome):
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
@@ -196,11 +153,9 @@ class GeneAlg:
                     genome.chromosome[vertex] = randint(0, gene_length)
         return genome
 
-    """
-        The fitness score is defined as the number of bad edges, where
-        a bad edge is an edge between adjacent vertices with the same 
-        color.
-    """
+# The fitness score is defined as the number of bad edges, where
+# a bad edge is an edge between adjacent vertices with the same color.
+
     def update_fitness_scores(self):
         for i in range(0, len(self.genomes)):
             bad_edges = 0
