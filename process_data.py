@@ -13,7 +13,7 @@ df2 = pd.read_csv('dataset/processed_data/exams.csv')
 # df2.reset_index(inplace=True)
 # df2.rename(columns = {'index':'eid'}, inplace = True)
 # print(df2)
-# df2.to_csv('dataset/processed_data/exams.csv')
+# df2.to_csv('dataset/processed_data/exams.csv', index=False)
 
 # process enrolments.csv
 df3 = pd.read_csv('dataset/processed_data/enrolments.csv')
@@ -23,4 +23,4 @@ df3 = df3.sort_values('sid')
 df3 = df3.reset_index(drop=True)
 df3 = df3[["sid", "eid", "student", "exam"]]
 print(df3)
-#df3.to_csv('dataset/processed_data/enrolments_with_id.csv')
+# df3.to_csv('dataset/processed_data/enrolments_with_id.csv', index=False)
