@@ -33,6 +33,9 @@ class VertexNode:
             result = result + str(edge.target) + " "
         return result
 
+    def neighbors(self):
+        return self.edges
+
 
 class Graph:
     def __init__(self, n):
@@ -68,6 +71,28 @@ class Graph:
                     if(operator.not_(graph.vertex(v1).contains(v2)) and operator.not_(graph.vertex(v2).contains(v1))):
                         graph.add_edge(v1, v2)
         return graph
+    
+    @staticmethod
+    def greedy_coloring(graph):
+        coloring = {}
+        color = 0
+        vertices = graph.vertices
+
+        for v in graph.vertices():
+            # the case where the graph is disconnected and v
+            # has no neighbors
+            if len(v.neighbors()) <= 0:
+                coloring[v.vertex] = color
+
+            for neighbor in v.neighbors():
+                if neighbor.target in coloring and coloring[neighbor.target] == color:
+                    # this is an adjacent node with same color
+                    # use next color
+                    color += 1
+                    coloring[v.vertex] = color
+                else:
+                    coloring[v.vertex] = color
+        return coloring
 """
     @staticmethod
     def genetic_algorithm(graph):
@@ -157,10 +182,10 @@ class Graph:
 """
 
 g = Graph.random_graph(5, .2)
-print(g.to_string())
+#print(g.to_string())
 #g.print_graph()
-#coloring = Graph.greedy_coloring(g)
-#print('Greedy Solution: \n',coloring)
+coloring = Graph.greedy_coloring(g)
+print('Greedy Solution: \n',coloring)
 #print(str(len(g.vertices)))
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
