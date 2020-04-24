@@ -17,12 +17,10 @@ df2 = pd.read_csv('dataset/processed_data/exams.csv')
 
 # process enrolments.csv
 df3 = pd.read_csv('dataset/processed_data/enrolments.csv')
+df3 = df3.merge(df1).merge(df2)
+df3 = df3.drop(['major','description', 'duration', 'department_code'], axis=1)
+df3 = df3.sort_values('sid')
+df3 = df3.reset_index(drop=True)
+df3 = df3[["sid", "eid", "student", "exam"]]
 print(df3)
-df3.to_csv('dataset/processed_data/enrolments.csv')
-# df3 = df3.merge(df1).merge(df2)
-# df3 = df3.drop(['major','description', 'duration', 'department_code'], axis=1)
-# df3 = df3.sort_values('sid')
-# df3 = df3.reset_index(drop=True)
-# df3 = df3[["sid", "eid", "student", "exam"]]
-# print(df3)
 #df3.to_csv('dataset/processed_data/enrolments_with_id.csv')
