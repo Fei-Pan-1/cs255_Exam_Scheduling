@@ -45,7 +45,12 @@ class GeneAlg:
         self.genomes.clear()
 
         for i in range(0, self.population_size):
-            self.genomes.append(Genome(self.chromosome_length, self.gene_length))
+            genome = Genome(self.chromosome_length, self.gene_length)
+            chromosome = genome.chromosome
+
+            for vertex in range(0, len(chromosome)):
+                genome.fitness += self.compute_score(vertex, chromosome)
+            self.genomes.append(genome)
 
         self.generation = 0
         self.fittest_genome = 0
@@ -159,6 +164,11 @@ class GeneAlg:
                     genome.chromosome[vertex] = randint(0, self.gene_length)
         return genome
 
+    def compute_score(self, vertex, chromosome):
+        bad_edges = 0
+        matching_verticies = self.color_matchings(vertex, chromosome)
+        return len(matching_verticies)
+
 # The fitness score is defined as the number of bad edges, where
 # a bad edge is an edge between adjacent vertices with the same color.
 
@@ -168,8 +178,7 @@ class GeneAlg:
             chromosome = self.genomes[i].chromosome
 
             for vertex in range(0, len(chromosome)):
-                matching_verticies = self.color_matchings(vertex, chromosome)
-                bad_edges += len(matching_verticies)
+                bad_edges = self.compute_score(vertex, chromosome)
             self.genomes[i].fitness = bad_edges
             
             if(self.genomes[i].fitness < self.fittest_genome):

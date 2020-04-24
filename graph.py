@@ -157,8 +157,8 @@ class Graph:
 
 
 
-g = Graph.random_graph(5, .2)
-print(g.to_string())
+g = Graph.random_graph(50, .2)
+#print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
 #print('Greedy Solution: \n',coloring)
