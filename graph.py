@@ -1,10 +1,12 @@
 from random import seed
 from random import random
+from gene_alg import GeneAlg
 
 # implementation of an undirected graph using Adjacency Lists
 class Vertex:
-    def __init__(self, n):
+    def __init__(self, n, index):
         self.name = n
+        self.index = index
         self.neighbors = list()
 
     def add_neighbor(self, v):
@@ -35,6 +37,15 @@ class Graph:
         for key in sorted(list(self.vertices.keys())):
             print(key + str(self.vertices[key].neighbors))
 
+#TODO: will need to adjust this to work with exams
+    def neighbors_of(i_vertex):
+        return graph.vertices[i_vertex].neighbors
+
+    @staticmethod
+    def genetic_algorithm(graph):
+        genenetic = GeneAlg(graph, 50, .2, .2, 4)
+        genenetic.create_start_population()
+        print(genenetic.genomes[0].chromosome)
 
     @staticmethod
     def greedy_coloring(graph):
@@ -95,7 +106,7 @@ class Graph:
         seed()
         g = Graph()
         for vertex in range(0, n):
-            g.add_vertex(Vertex(str(vertex)))
+            g.add_vertex(Vertex(str(vertex), vertex))
 
         for source in range(0, n):
             for target in range(0, n):
@@ -107,10 +118,12 @@ class Graph:
 
 
 g = Graph.random_graph(5, .2)
-g.print_graph()
-coloring = Graph.greedy_coloring(g)
-print('Greedy Solution: \n',coloring)
+#g.print_graph()
+#coloring = Graph.greedy_coloring(g)
+#print('Greedy Solution: \n',coloring)
 #print(str(len(g.vertices)))
-coloring1 = Graph.welsh_powell(g)
-print('Welsh Powell Solution: \n', coloring1)
+#coloring1 = Graph.welsh_powell(g)
+#print('Welsh Powell Solution: \n', coloring1)
+
+Graph.genetic_algorithm(g)
 
