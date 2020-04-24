@@ -3,6 +3,7 @@ from random import random
 from gene_alg import GeneAlg
 
 # implementation of an undirected graph using Adjacency Lists
+"""
 class Vertex:
     def __init__(self, n, index):
         self.name = n
@@ -39,7 +40,60 @@ class Graph:
 
 #TODO: will need to adjust this to work with exams
     def neighbors_of(self, i_vertex):
-        return self.vertices[i_vertex].neighbors
+        for v in self.vertices:
+            print(v)
+        return self.vertices[str(i_vertex)].neighbors
+"""
+class EdgeNode:
+   def __init__(self, source, target):
+       self.source = source
+       self.target = target
+
+    def to_string(self):
+        return " " + target
+
+class VertexNode:
+    def __init__(self, v):
+        self.vertex = v
+        self.edges = list()
+
+    def add_edge(self, u):
+        edges.append(u)
+
+    def contains(self, target):
+        for edge in edges:
+            if(edge.target == target):
+                return True
+        return False
+
+    def to_string(self): 
+        result = self.vertex + ": "
+        for edge in self.edges:
+            result = result + edge.target + " "
+
+        return result
+
+
+class Graph
+    def __init__(self, n):
+        self.adjList = list()
+        for i in range(0, n):
+            self.adjList.append(VertexNode(i))
+
+    def vertices(self):
+        return self.adjList
+
+    def add_edge(source, target):
+        self.adjList[source].add_edge(EdgeNode(source, target))
+
+    def vertex(v)
+        return self.adjList[v]
+
+    def to_string():
+        result = ""
+        for vertex in adjList:
+            result = result + vertex.to_string() + "\n"
+        return result
 
     @staticmethod
     def genetic_algorithm(graph):
@@ -110,7 +164,7 @@ class Graph:
                         #print('color', u[0], 'to', color)
                         colored.append(u)
         return coloring_dict
-
+"""
     @staticmethod
     def random_graph(n, p_threshold):
         seed()
@@ -125,7 +179,7 @@ class Graph:
                    if source not in g.vertices and source not in g.vertices:
                         g.add_edge(str(source), str(target))
         return g
-
+"""
 
 g = Graph.random_graph(5, .2)
 #g.print_graph()
@@ -134,6 +188,6 @@ g = Graph.random_graph(5, .2)
 #print(str(len(g.vertices)))
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
-
+#print(g.vertices)
 print(Graph.genetic_algorithm(g))
 

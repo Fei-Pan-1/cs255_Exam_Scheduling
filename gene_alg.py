@@ -130,6 +130,7 @@ class GeneAlg:
         neighbors = self.graph.neighbors_of(vertex)
 
         for neighbor in neighbors:
+            #print("asdfasdfasfasdfsadfa"+neighbor)
             if(coloring[vertex] == coloring[neighbor.index]):
                 matchings.append(neighbor.index)
         return matchings
