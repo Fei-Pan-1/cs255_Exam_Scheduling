@@ -14,7 +14,7 @@ class Genome:
             self.chromosome.append(randint(0, n_colors))
 
 class GeneAlg:
-    def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length):
+    def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
             self.genomes = list()
 
             self.population_size = pop_size
@@ -27,10 +27,10 @@ class GeneAlg:
             self.graph = graph
 
             self.fittest_genome = 0
-            self.second_fittest_genome = 1
-            self.best_fitness_score = 0.0
-            self.total_fitness_score = 0
+            self.fittest_score = 0
+            self.second_fittest_genome = 0
             self.generation = 0
+            self.MAX_EPOCHS = max_epochs
 
     def create_start_population(self):
         self.genomes.clear()
@@ -40,21 +40,8 @@ class GeneAlg:
 
         self.generation = 0
         self.fittest_genome = 0
-        self.best_fitness_score = 0.0
-        self.total_fitness_score = 0
-
-    def roulette_wheel(self):
-        slice = random() * self.total_fitness_score
-        total = 0.0
-        selected_genome = 0
-
-        for i in range(0, self.population_size):
-            total = self.genomes[i].fitness
-            
-            if(total >= slice):
-                selected_genome = i
-
-        return self.genomes[selected_genome]
+        self.second_fittest_genome = 0
+        self.fittest_score = 0
 
         """ 
         def parent_selection_1(self):
@@ -92,8 +79,8 @@ class GeneAlg:
         return parent1, parent2;
     """
     def parent_selection2(self):
-        parent1 = self.genomes[fittest_genome]
-        parent2 = self.genomes[second_fittest_genome]
+        parent1 = self.genomes[self.fittest_genome]
+        parent2 = self.genomes[self.second_fittest_genome]
 
         return parent1, parent2
 
@@ -144,7 +131,7 @@ class GeneAlg:
 
         neighbors = graph.neighbors_of(vertex)
         for neighbor in neighbors:
-            if(coloring[vertex] == coloring[neighbor.index]:
+            if(coloring[vertex] == coloring[neighbor.index]):
                 return True
         return False
 
@@ -153,12 +140,13 @@ class GeneAlg:
         a given vertex
     """
     def color_matchings(self, vertex, coloring):
-
+        matchings = list()
         neighbors = graph.neighbors_of(vertex)
+
         for neighbor in neighbors:
-            if(coloring[vertex] == coloring[neighbor.index]:
-                return True
-        return False
+            if(coloring[vertex] == coloring[neighbor.index]):
+                matchings.append(neighbor.index)
+        return matchings
 
     """
         creates a list of colors not used by neighbors 
@@ -205,16 +193,67 @@ return chromosome;
                 genome.chromosome[vertex] = randint(0, gene_length)
         return genome
 
+    """
+        The fitness score is defined as the number of bad edges, where
+        a bad edge is an edge between adjacent vertices with the same 
+        color.
+    """
+    def update_fitness_scores(self):
+        for i in len(self.genomes):
+            bad_edges = 0
+            chromosome = genome[i].chromosome
 
+            for vertex in chromosome:
+                matching_verticies = self.color_matchings(vertex, chromosome)
+                bad_edges += len(matching_verticies)
+            genome[i].fitness = bad_edges
+            
+            if(genome[i].fitness > fittest_so_far):
+                self.second_fittest_genome = self.fittest_genome
+                self.fittest_genome = i
+                self.fittest_score = genome[i].fitness
+
+        
     def epoch(self):
-        #self.update_fitness_score()
+        # constant decided by paper through expermimentation
+        SELECTION_MUTATION_THRESHOLD = 4
+        fittest_score = self.genomes[self.fittest_genome].fitness
+        next_generation = list()
+
+        self.update_fitness_scores()
+
         noobs = 0
-
         while(noobs < self.population_size):
-            mom = self.roulette_wheel()
-            dad = self.roulette_wheel()
+            if(fittest_score > 4):
+                parent1, parent2 = self.parent_selection1()
+                child1 = self.crossover(parent1, parent2)
+                child1 = self.mutation1(child1)
+                next_generation.append(child1)
 
-            #(child1, child2) = crossover()
+                child2 = self.crossover(parent1, parent2)
+                child2 = self.mutation1(child2)
+                next_generation.append(child2)
 
+            else:
+                parent1, parent2 = self.parent_selection2()
+                child1 = self.crossover(parent1, parent2)
+                child1 = self.mutation2(child1)
+                next_generation.append(child1)
 
+                child2 = self.crossover(parent1, parent2)
+                child2 = self.mutation2(child2)
+                next_generation.append(child2)
+            noobs += 1
 
+        self.genomes = next_generation
+        self.generation += 1
+
+    def run(self):
+        while(self.fittest_score != 0 or self.generation <= MAX_EPOCHS):
+            self.epoch()
+
+        if(self.generation == MAX_EPOCHS and self.fittest_score != 0):
+            print("Failed to converge in "+ self.MAX_EPOCHS + " epochs")
+            #wisdom of the crouds
+
+        return self.genomes[fittest_genome]

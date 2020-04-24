@@ -43,7 +43,7 @@ class Graph:
 
     @staticmethod
     def genetic_algorithm(graph):
-        genenetic = GeneAlg(graph, 50, .2, .2, 4)
+        genenetic = GeneAlg(graph, 50, .2, .2, 4, 10)
         genenetic.create_start_population()
         print(genenetic.genomes[0].chromosome)
 
