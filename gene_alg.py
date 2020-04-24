@@ -108,20 +108,6 @@ class GeneAlg:
 
         return child
 
-    """
-        Algorithm5: mutation1:
-        define: chromosome, allColors, adjacentColors, validColors,
-        newColor;
-        for each(vertex in chromosome) {
-        if (vertex has the same color as an adjacent vertex) {
-        adjacentColors = all adjacent colors;
-        validColors = allColors – adjacentColors;
-        newColor = random color from validColors;
-        chromosome.setColor(vertex, newColor)
-        }
-        }
-        return chromosome;
-    """
 
     """
         Checks if a vertex has a matching color with any of 
@@ -163,6 +149,20 @@ class GeneAlg:
         return valid_colors
 
 
+    """
+        Algorithm5: mutation1:
+            define: chromosome, allColors, adjacentColors, validColors,
+                newColor;
+            for each(vertex in chromosome) {
+                if (vertex has the same color as an adjacent vertex) {
+                    adjacentColors = all adjacent colors;
+                    validColors = allColors – adjacentColors;
+                    newColor = random color from validColors;
+                    chromosome.setColor(vertex, newColor)
+                }
+            }
+        return chromosome;
+    """
     def mutation1(self, genome):
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
@@ -178,14 +178,14 @@ class GeneAlg:
 
     """
     Algorithm6: mutation2:
-define: chromosome, allColors
-for each(vertex in chromosome) {
-if (vertex has the same color as an adjacent vertex) {
-newColor = random color from allColors;
-chromosome.setColor(vertex, newColor)
-}
-}
-return chromosome;
+        define: chromosome, allColors
+            for each(vertex in chromosome) {
+                if (vertex has the same color as an adjacent vertex) {
+                    newColor = random color from allColors;
+                    chromosome.setColor(vertex, newColor)
+                }
+            }
+        return chromosome;
 """
     def mutation2(self, genome):
         if(random() < self.mutation_rate):
