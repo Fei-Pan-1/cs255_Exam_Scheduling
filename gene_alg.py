@@ -3,7 +3,7 @@ from random import randint
 from random import random
 seed()
 
-class Genome:
+class Genome(object):
     def __init__(self, n_vertices, n_colors):
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
@@ -22,7 +22,7 @@ class Genome:
 
         return result
 
-class GeneAlg:
+class GeneAlg(object):
     def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
         self.genomes = list()
 
@@ -192,8 +192,6 @@ class GeneAlg:
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
                 self.fittest_score = score
-
-        #print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
     def epoch(self):
         # constant decided by paper through expermimentation

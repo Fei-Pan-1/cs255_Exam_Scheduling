@@ -5,7 +5,7 @@ import operator
 
 # implementation of an undirected graph using Adjacency Lists
 
-class EdgeNode:
+class EdgeNode(object):
     def __init__(self, source, target):
        self.source = source
        self.target = target
@@ -13,7 +13,7 @@ class EdgeNode:
     def to_string(self):
         return " " + str(target)
 
-class VertexNode:
+class VertexNode(object):
     def __init__(self, v):
         self.vertex = v
         self.edges = list()
@@ -44,7 +44,7 @@ class VertexNode:
         return self.edges
 
 
-class Graph:
+class Graph(object):
     def __init__(self, n):
         self.adj_list = list()
         self.n_verticies = n
@@ -148,8 +148,8 @@ class Graph:
         max_epochs = 20000
 
         #worst case, every vertex needs a color
-        #colors = len(graph.vertices()) 
-        colors = 2
+        colors = len(graph.vertices()) 
+        #colors = 2
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
         coloring = genenetic.run()
@@ -162,7 +162,7 @@ class Graph:
 
 
 
-g = Graph.random_graph(5, .3)
+g = Graph.random_graph(5, .7)
 print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
