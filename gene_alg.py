@@ -8,7 +8,7 @@ class Genome:
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
         self.chromosome = list()
-        self.fitness = 999999999999
+        self.fitness = 99
 
         for v in range(0, n_vertices):
             self.chromosome.append(randint(0, n_colors-1))
@@ -29,27 +29,25 @@ class Genome:
 
 class GeneAlg:
     def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
-            self.genomes = list()
+        self.genomes = list()
 
-            self.population_size = pop_size
-            self.crossover_rate = cross_rate
-            self.mutation_rate = mut_rate
-            # number of vertices
-            self.chromosome_length = len(graph.vertices())
-            # number of colors
-            self.gene_length = gene_length
-            self.graph = graph
+        self.population_size = pop_size
+        self.crossover_rate = cross_rate
+        self.mutation_rate = mut_rate
+        # number of vertices
+        self.chromosome_length = len(graph.vertices())
+        # number of colors
+        self.gene_length = gene_length
+        self.graph = graph
 
-            self.fittest_genome = 0
-            self.fittest_score = 999999999999
-            self.second_fittest_genome = 0
-            self.generation = 0
-            self.MAX_EPOCHS = max_epochs
-
-    def create_initial_population(self):
-        self.genomes.clear()
+        self.fittest_genome = 0
+        self.fittest_score = 99
+        self.second_fittest_genome = 0
+        self.generation = 0
+        self.MAX_EPOCHS = max_epochs
 
         for i in range(0, self.population_size):
+            print(i)
             genome = Genome(self.chromosome_length, self.gene_length)
             chromosome = genome.chromosome
             score = 0
@@ -58,15 +56,15 @@ class GeneAlg:
                 score += self.compute_score(vertex, chromosome)
 
             genome.fitness = score
+            if(score < self.fittest_score):
+                self.fittest_score = score
+                self.fittest_genome = i
+            print(genome.to_string())
             self.genomes.append(genome)
-
-        self.generation = 0
-        self.fittest_genome = 0
-        self.second_fittest_genome = 0
-        self.fittest_score = 999999999999
 
 
     def max_fitness(self, genome1, genome2):
+        print(genome1.fitness)
         if(genome1.fitness < genome2.fitness):
             return genome1
         return genome2

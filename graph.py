@@ -152,7 +152,6 @@ class Graph:
         colors = 2
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
-        genenetic.create_initial_population()
         coloring = genenetic.run()
         genomes = genenetic.genomes
 
