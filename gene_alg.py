@@ -8,7 +8,7 @@ class Genome:
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
         self.chromosome = list()
-        self.fitness = 99
+        self.fitness = 99999999
 
         for v in range(0, n_vertices):
             self.chromosome.append(randint(0, n_colors-1))
@@ -35,30 +35,34 @@ class GeneAlg:
         self.gene_length = gene_length
         self.graph = graph
 
-        self.fittest_genome = 0
-        self.fittest_score = 99
-        self.second_fittest_genome = 0
+        self.fittest_genome = -1
+        self.fittest_score = 99999999
+        self.second_fittest_genome = -1
         self.generation = 0
         self.MAX_EPOCHS = max_epochs
 
         for i in range(0, self.population_size):
             genome = Genome(self.chromosome_length, self.gene_length)
-            chromosome = genome.chromosome
-            score = 0
+            score = self.compute_score(genome.chromosome)
 
-            for vertex in range(0, len(chromosome)):
-                score += self.compute_score(vertex, chromosome)
-
+            # get the initial fittest genome
             genome.fitness = score
             if(score <= self.fittest_score):
                 self.fittest_score = score
-                self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
             self.genomes.append(genome)
 
+        # get the initial second fittest genome
+        for i in range(0, len(self.genomes)):
+            next_fittest = 99999999
+            if(i != self.fittest_genome):
+                if(self.genomes[i].fitness < next_fittest):
+                    next_fittest = self.genomes[i].fitness
+                    self.second_fittest_genome = i
+            
+
 
     def max_fitness(self, genome1, genome2):
-        print(genome1.fitness)
         if(genome1.fitness < genome2.fitness):
             return genome1
         return genome2
@@ -168,29 +172,28 @@ class GeneAlg:
                     genome.chromosome[vertex] = randint(0, self.gene_length-1)
         return genome
 
-    def compute_score(self, vertex, chromosome):
+    def compute_score(self, chromosome):
         bad_edges = 0
-        matching_verticies = self.color_matchings(vertex, chromosome)
-        return len(matching_verticies)
+
+        for i in range(0, len(chromosome)):
+            bad_edges += len(self.color_matchings(i, chromosome))
+        return bad_edges
 
 # The fitness score is defined as the number of bad edges, where
 # a bad edge is an edge between adjacent vertices with the same color.
 
     def update_fitness_scores(self):
         for i in range(0, len(self.genomes)):
-            bad_edges = 0
             chromosome = self.genomes[i].chromosome
-
-            for vertex in range(0, len(chromosome)):
-                bad_edges = self.compute_score(vertex, chromosome)
-            self.genomes[i].fitness = bad_edges
+            score = self.compute_score(chromosome)
+            self.genomes[i].fitness = score
             
-            if(bad_edges <= self.fittest_score):
+            if(score <= self.fittest_score):
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
-                self.fittest_score = self.genomes[i].fitness
+                self.fittest_score = score
 
-        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
+        #print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
     def epoch(self):
         # constant decided by paper through expermimentation
@@ -224,6 +227,7 @@ class GeneAlg:
 
         self.genomes = next_generation
         self.generation += 1
+        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
 #TODO: Wisdom of the crowds
 
@@ -231,9 +235,10 @@ class GeneAlg:
         while(self.fittest_score > 0 and self.generation <= self.MAX_EPOCHS):
             self.epoch()
 
-        if(self.generation == self.MAX_EPOCHS and self.fittest_score != 0):
-            print("Failed to converge in "+ self.MAX_EPOCHS + " epochs")
+        if(self.generation >= self.MAX_EPOCHS and self.fittest_score > 0):
+            print("Failed to converge in "+ str(self.MAX_EPOCHS) + " epochs")
             #wisdom of the crouds
 
+        print("Geneeration:::" + str(self.generation))
         return self.genomes[self.fittest_genome]
 
