@@ -64,8 +64,8 @@ class GeneAlg(object):
             self.genomes.append(genome)
 
         # get the initial second fittest genome
+        next_fittest = 99999999
         for i, genome in enumerate(self.genomes):
-            next_fittest = 99999999
             if(i != self.fittest_genome):
                 if(genome.fitness < next_fittest):
                     next_fittest = genome.fitness

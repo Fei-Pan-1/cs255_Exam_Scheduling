@@ -7,51 +7,6 @@ public class Graph {
 	private List<VertexNode> adjList;
 	public int nVertices;
 
-	private class EdgeNode {
-		public int source;
-		public int target;
-
-		public EdgeNode(int source, int target) {
-			this.source = source;
-			this.target = target;
-		}
-
-		public String toString() {
-			return " " + target;
-		}
-	}
-
-	private class VertexNode {
-		public int vertex;
-		public List<EdgeNode> edges;
-
-		public VertexNode(int v) {
-			vertex = v;
-			edges = new ArrayList<EdgeNode>();
-		}
-
-		public void addEdge(EdgeNode e) {
-			edges.add(e);
-		}
-
-		public boolean contains(int target) {
-			for(EdgeNode edge : edges) {
-				if(edge.target == target) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public String toString() {
-			String result = new String(vertex + ": ");
-			for(EdgeNode edge : edges) {
-				result = result + edge.target + " ";
-			}
-			return result;
-		}
-	}
-
 	public Graph(int n) {
 		nVertices = n;
 		adjList = new ArrayList<VertexNode>(n);
@@ -59,6 +14,10 @@ public class Graph {
 		for(int i=0; i<n; i++) {
 			adjList.add(new VertexNode(i));
 		}
+	}
+
+	public List<EdgeNode> neighborOf(int vertex) {
+		return adjList.get(vertex).neighbors();
 	}
 
 	public List<VertexNode> verticies() { return adjList; }
@@ -102,9 +61,23 @@ public class Graph {
 		return graph;
 	}
 
-	public static void WelshPowell(Graph g) {
+	public static Genome geneticAlgorithm(Graph graph) {
+		mutationRate = 1.0;
+		crossoverRate = 1.0;
+		populationSize = 50;
+		maxEpochs = 20000;
+		colors = graph.verticies().size();
 
+		GenAlg genetic = new GeneAlg(graph,
+									populationSize,
+									crossoverRate,
+									mutationRate,
+									colors,
+									maxEpochs);
+		Genome chromosome = genetic.run();
+		return chromosome;
 	}
+
 
 	public static Map<Integer, Integer> greedyColoring(Graph graph) {
 		Map<Integer, Integer> coloring = new HashMap<>();
@@ -145,10 +118,11 @@ public class Graph {
 
 	public static void main(String[] args) {
 		Graph g = Graph.randomGraph(4, .2);
-		Map<Integer, Integer> coloring = Graph.greedyColoring(g);
-		System.out.println(coloring.toString());
+		//Map<Integer, Integer> coloring = Graph.greedyColoring(g);
+		//System.out.println(coloring.toString());
 		System.out.println(g.toString());
 		//System.out.println(coloringToString(coloring));
+		Genome gen = Graph.geneticAlgorithm(g);
 
 	}
 }
