@@ -148,8 +148,8 @@ class Graph:
         max_epochs = 20000
 
         #worst case, every vertex needs a color
-        #colors = len(graph.vertices()) 
-        colors = 2
+        colors = len(graph.vertices()) 
+        #colors = 2
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
         coloring = genenetic.run()

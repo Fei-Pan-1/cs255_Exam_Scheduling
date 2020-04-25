@@ -13,11 +13,6 @@ class Genome:
         for v in range(0, n_vertices):
             self.chromosome.append(randint(0, n_colors-1))
 
-        #result = ""
-        #for v in range(0, len(self.chromosome)):
-            #result += str(self.chromosome[v])
-        #print(result)
-
     def to_string(self):
         result = "Chromosome: "
 
@@ -47,7 +42,6 @@ class GeneAlg:
         self.MAX_EPOCHS = max_epochs
 
         for i in range(0, self.population_size):
-            print(i)
             genome = Genome(self.chromosome_length, self.gene_length)
             chromosome = genome.chromosome
             score = 0
@@ -56,10 +50,10 @@ class GeneAlg:
                 score += self.compute_score(vertex, chromosome)
 
             genome.fitness = score
-            if(score < self.fittest_score):
+            if(score <= self.fittest_score):
                 self.fittest_score = score
+                self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
-            print(genome.to_string())
             self.genomes.append(genome)
 
 
@@ -191,21 +185,13 @@ class GeneAlg:
                 bad_edges = self.compute_score(vertex, chromosome)
             self.genomes[i].fitness = bad_edges
             
-            if(self.genomes[i].fitness < self.fittest_score):
+            if(bad_edges <= self.fittest_score):
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
                 self.fittest_score = self.genomes[i].fitness
 
-        # print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
+        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
-       # for i in range(0, len(self.genomes)):
-       #     result = ""
-       #     result = result + str(self.genomes[i].fitness) + ":::"
-       #     chrome = self.genomes[i].chromosome
-       ##     for j in range(0, len(chrome)):
-        #        result = result + str(j)
-        #    print(result)
-        
     def epoch(self):
         # constant decided by paper through expermimentation
         SELECTION_MUTATION_THRESHOLD = 4
@@ -238,14 +224,6 @@ class GeneAlg:
 
         self.genomes = next_generation
         self.generation += 1
-
- #       for g in self.genomes:
- #           result = ""
- #           chrome = g.chromosome
- ##           result = result + "F: " + str(g.fitness) + "::"
-  #          for i in range(0, len(chrome)):
-   #             result += str(chrome[i])
-   #         print(result)
 
 #TODO: Wisdom of the crowds
 
