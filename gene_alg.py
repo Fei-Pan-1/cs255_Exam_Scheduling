@@ -4,11 +4,11 @@ from random import random
 seed()
 
 class Genome(object):
-    def __init__(self, n_vertices, n_colors):
+    def __init__(self, n_vertices, n_colors, graph):
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
         self.chromosome = list()
-        self.fitness = 99999999
+        self.fitness = self.compute_score(graph)
 
         for v in range(0, n_vertices):
             self.chromosome.append(randint(0, n_colors-1))
@@ -21,6 +21,17 @@ class Genome(object):
         result = result + " :: fitness: " + str(self.fitness)
 
         return result
+    
+    def assign_score(self, score):
+        self.fitness = score
+
+    def compute_score(self, graph):
+        bad_edges = 0
+        for i in range(0, len(self.chromosome)):
+            neighbors = graph.neighbors_of(vertex)
+            for neighbor in neighbors:
+                if(self.chromosome[i] == self.chromosome[neighbor.target]):
+                    bad_edges += 1
 
 class GeneAlg(object):
     def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
@@ -42,22 +53,22 @@ class GeneAlg(object):
         self.MAX_EPOCHS = max_epochs
 
         for i in range(0, self.population_size):
-            genome = Genome(self.chromosome_length, self.gene_length)
+            genome = Genome(self.chromosome_length, self.gene_length, self.graph)
             score = self.compute_score(genome.chromosome)
 
             # get the initial fittest genome
-            genome.fitness = score
+            genome.assign_score(score)
             if(score <= self.fittest_score):
                 self.fittest_score = score
                 self.fittest_genome = i
             self.genomes.append(genome)
 
         # get the initial second fittest genome
-        for i in range(0, len(self.genomes)):
+        for i, genome in enumerate(self.genomes):
             next_fittest = 99999999
             if(i != self.fittest_genome):
-                if(self.genomes[i].fitness < next_fittest):
-                    next_fittest = self.genomes[i].fitness
+                if(genome.fitness < next_fittest):
+                    next_fittest = genome.fitness
                     self.second_fittest_genome = i
             
 
@@ -101,7 +112,7 @@ class GeneAlg(object):
             return parent1, parent2
 
         crossover_point = randint(0, self.chromosome_length-1)
-        child = Genome(self.chromosome_length, self.gene_length)
+        child = Genome(self.chromosome_length, self.gene_length, self.graph)
 
         for i in range(0, self.chromosome_length):
             if(i <= crossover_point):
@@ -183,10 +194,10 @@ class GeneAlg(object):
 # a bad edge is an edge between adjacent vertices with the same color.
 
     def update_fitness_scores(self):
-        for i in range(0, len(self.genomes)):
-            chromosome = self.genomes[i].chromosome
+        for i, genome in enumerate(self.genomes):
+            chromosome = genome.chromosome
             score = self.compute_score(chromosome)
-            self.genomes[i].fitness = score
+            self.genomes[i].assign_score(score)
             
             if(score <= self.fittest_score):
                 self.second_fittest_genome = self.fittest_genome

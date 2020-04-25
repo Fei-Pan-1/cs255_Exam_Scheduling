@@ -155,14 +155,14 @@ class Graph(object):
         coloring = genenetic.run()
         genomes = genenetic.genomes
 
-        for g in range(0, len(genomes)):
-            print(genomes[g].to_string())
+        #for g in range(0, len(genomes)):
+            #print(genomes[g].to_string())
         print("FITTESTSCORE:::"+str(genenetic.fittest_score))
         return coloring
 
 
 
-g = Graph.random_graph(5, .7)
+g = Graph.random_graph(800, .7)
 print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
