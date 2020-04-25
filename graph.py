@@ -148,16 +148,21 @@ class Graph:
         max_epochs = 20000
 
         #worst case, every vertex needs a color
-        colors = len(graph.vertices()) 
+        #colors = len(graph.vertices()) 
+        colors = 2
 
         genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
         genenetic.create_initial_population()
         coloring = genenetic.run()
+        genomes = genenetic.genomes
+
+        #for g in range(0, len(genomes)):
+            #print(genomes[g].to_string())
         return coloring
 
 
 
-g = Graph.random_graph(50, .2)
+g = Graph.random_graph(5, .2)
 #print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
@@ -166,7 +171,8 @@ g = Graph.random_graph(50, .2)
 #coloring1 = Graph.welsh_powell(g)
 #print('Welsh Powell Solution: \n', coloring1)
 #print(g.vertices)
-print(Graph.genetic_algorithm(g).to_string())
+colroing = Graph.genetic_algorithm(g)
+print(colroing.to_string())
 
 
 

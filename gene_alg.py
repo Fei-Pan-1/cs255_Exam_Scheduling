@@ -8,17 +8,22 @@ class Genome:
         #length should be number of verticies
         #each is assigned a color from 0 to color-1
         self.chromosome = list()
-        self.fitness = 0
+        self.fitness = 999999999999
 
-        for color in range(0, n_vertices):
-            self.chromosome.append(randint(0, n_colors))
+        for v in range(0, n_vertices):
+            self.chromosome.append(randint(0, n_colors-1))
+
+        #result = ""
+        #for v in range(0, len(self.chromosome)):
+            #result += str(self.chromosome[v])
+        #print(result)
 
     def to_string(self):
-        result = "fitness: " + str(self.fitness) + "\n"
-        result = result + "Chromosome: "
+        result = "Chromosome: "
 
         for i in range(0, len(self.chromosome)):
-            result = result + str(i) + " "
+            result = result + str(self.chromosome[i]) + " "
+        result = result + " :: fitness: " + str(self.fitness)
 
         return result
 
@@ -36,7 +41,7 @@ class GeneAlg:
             self.graph = graph
 
             self.fittest_genome = 0
-            self.fittest_score = self.chromosome_length
+            self.fittest_score = 999999999999
             self.second_fittest_genome = 0
             self.generation = 0
             self.MAX_EPOCHS = max_epochs
@@ -47,15 +52,18 @@ class GeneAlg:
         for i in range(0, self.population_size):
             genome = Genome(self.chromosome_length, self.gene_length)
             chromosome = genome.chromosome
+            score = 0
 
             for vertex in range(0, len(chromosome)):
-                genome.fitness += self.compute_score(vertex, chromosome)
+                score += self.compute_score(vertex, chromosome)
+
+            genome.fitness = score
             self.genomes.append(genome)
 
         self.generation = 0
         self.fittest_genome = 0
         self.second_fittest_genome = 0
-        self.fittest_score = self.chromosome_length
+        self.fittest_score = 999999999999
 
 
     def max_fitness(self, genome1, genome2):
@@ -96,7 +104,7 @@ class GeneAlg:
             #don't corossover
             return parent1, parent2
 
-        crossover_point = randint(0, self.chromosome_length)
+        crossover_point = randint(0, self.chromosome_length-1)
         child = Genome(self.chromosome_length, self.gene_length)
 
         for i in range(0, self.chromosome_length):
@@ -132,9 +140,13 @@ class GeneAlg:
 
 # creates a list of colors not used by neighbors 
 # of a given vertex
-    def available_colors(self, vertex, adjacent_colors):
+    def available_colors(self, vertex, coloring):
         valid_colors = list()
+        adjacent_colors = list()
         neighbors = self.graph.neighbors_of(vertex)
+
+        for neighbor in neighbors:
+            adjacent_colors.append(coloring[neighbor.target])
         
 
         for color in range(0, self.gene_length):
@@ -146,7 +158,7 @@ class GeneAlg:
     def mutation1(self, genome):
         if(random() < self.mutation_rate):
             chromosome = genome.chromosome
-            for vertex in range(len(chromosome)):
+            for vertex in range(0, len(chromosome)):
                 if(self.is_color_matching(vertex, chromosome)):
                     # we have neighbors with the same color
                     # get a list of available colors
@@ -161,7 +173,7 @@ class GeneAlg:
             chromosome = genome.chromosome
             for vertex in range(len(chromosome)):
                 if(self.is_color_matching(vertex, chromosome)):
-                    genome.chromosome[vertex] = randint(0, self.gene_length)
+                    genome.chromosome[vertex] = randint(0, self.gene_length-1)
         return genome
 
     def compute_score(self, vertex, chromosome):
@@ -181,13 +193,20 @@ class GeneAlg:
                 bad_edges = self.compute_score(vertex, chromosome)
             self.genomes[i].fitness = bad_edges
             
-            if(self.genomes[i].fitness < self.fittest_genome):
+            if(self.genomes[i].fitness < self.fittest_score):
                 self.second_fittest_genome = self.fittest_genome
                 self.fittest_genome = i
                 self.fittest_score = self.genomes[i].fitness
 
-        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
+        # print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
 
+       # for i in range(0, len(self.genomes)):
+       #     result = ""
+       #     result = result + str(self.genomes[i].fitness) + ":::"
+       #     chrome = self.genomes[i].chromosome
+       ##     for j in range(0, len(chrome)):
+        #        result = result + str(j)
+        #    print(result)
         
     def epoch(self):
         # constant decided by paper through expermimentation
@@ -222,10 +241,18 @@ class GeneAlg:
         self.genomes = next_generation
         self.generation += 1
 
+ #       for g in self.genomes:
+ #           result = ""
+ #           chrome = g.chromosome
+ ##           result = result + "F: " + str(g.fitness) + "::"
+  #          for i in range(0, len(chrome)):
+   #             result += str(chrome[i])
+   #         print(result)
+
 #TODO: Wisdom of the crowds
 
     def run(self):
-        while(self.fittest_score != 0 and self.generation <= self.MAX_EPOCHS):
+        while(self.fittest_score > 0 and self.generation <= self.MAX_EPOCHS):
             self.epoch()
 
         if(self.generation == self.MAX_EPOCHS and self.fittest_score != 0):
