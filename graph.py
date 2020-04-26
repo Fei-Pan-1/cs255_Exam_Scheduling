@@ -130,7 +130,6 @@ class Graph(object):
     def welsh_powell(graph):
         coloring_dict = {}
         vertices = graph.vertices()
-
         # sort vertices according to the decreasing number of their neighbors
         sorted_vertices = sorted(vertices, key=lambda kv: len(kv.neighbors()), reverse=True)
         print('sorted_vertices:', [e.vertex for e in sorted_vertices])
