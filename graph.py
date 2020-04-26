@@ -48,6 +48,7 @@ class Graph(object):
     def __init__(self, n):
         self.adj_list = list()
         self.n_verticies = n
+        self.n_edges = 0
 
         for i in range(0, n):
             self.adj_list.append(VertexNode(i))
@@ -58,6 +59,7 @@ class Graph(object):
     def add_edge(self, source, target):
         self.adj_list[source].add_edge(EdgeNode(source, target))
         self.adj_list[target].add_edge(EdgeNode(target, source))
+        self.n_edges += 1
 
     def vertex(self, v):
         return self.adj_list[v]
@@ -103,6 +105,11 @@ class Graph(object):
                     coloring[v.vertex] = color
         return coloring
 
+    @staticmethod
+    def graph_info(g):
+        print("|V| = " + str(g.n_verticies) + " |E| = " + str(g.n_edges))
+
+
 
     @staticmethod
     def genetic_algorithm(graph):
@@ -133,7 +140,7 @@ class Graph(object):
         vertices = graph.vertices()
         # sort vertices according to the decreasing number of their neighbors
         sorted_vertices = sorted(vertices, key=lambda kv: len(kv.neighbors()), reverse=True)
-        print('sorted_vertices:', [e.vertex for e in sorted_vertices])
+        #print('sorted_vertices:', [e.vertex for e in sorted_vertices])
 
         # Go through vertexes in the order of decreasing number of neighbors.
         color = 0
@@ -185,7 +192,7 @@ class Graph(object):
 
 def random_tests():
     iterations = 10
-    max_nodes = 30
+    max_nodes = 200
     correct_solutions = {}
 
     GREEDY = "Greedy"
@@ -201,6 +208,7 @@ def random_tests():
         nodes = randint(0, max_nodes) + 1
         p = random()
         g = Graph.random_graph(nodes, p)
+        Graph.graph_info(g)
 
         greedy_coloring = Graph.greedy_coloring(g)
         if(Graph.is_valid_solution(greedy_coloring, g)):
