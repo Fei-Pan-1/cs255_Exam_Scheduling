@@ -254,3 +254,42 @@ class GeneAlg(object):
                 chromosome.append(parent2.coloring[v])
         child = Genome.from_chromosome(self.chromosome_length, self.gene_length, chromosome)
         return child
+
+    def form_consensus(self, vertex, population):
+        counts = {}
+        for i in range(0, len(population)):
+            color = population[i].coloring[vertex]
+            if(color in counts):
+                counts[color] += 1
+            else:
+                counts[color] = 0
+
+
+        highest_key = 0
+        highest_val = 0
+        for k, v in counts.items():
+            if(v >= highest_val):
+                highest_val = v
+                highest_key = k
+        return highest_key
+
+    # Checks for bad edge in a vertex and uses the best half
+    # of the population to form a concensus on what color works
+    def wisdom_of_artificial_crowds(self):
+        # get the best half of the of the final population
+        experts = list()
+        self.genomes.sort(key=lambda x: x.fitness, reverse=False)
+
+        mid = int(self.population_size / 2)
+        for i in range(0, mid):
+            experts.append(self.genomes[i])
+
+        aggregate = self.genomes[self.fittest_genome]
+
+        coloring = aggregate.coloring
+        for v in range(0, self.chromosome_length):
+            if(self.has_adjacent_color(v, coloring)):
+                # vertex is part of a bad edge, get consensus, and assign
+                color = self.form_consensus(v, experts)
+                coloring[v] = color
+        return coloring

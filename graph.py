@@ -109,7 +109,7 @@ class Graph(object):
         mutation_rate = 1.0
         crossover_rate = 1.0
         population_size = 50
-        max_epochs = 20000
+        max_epochs = 1
 
         #worst case, every vertex needs a color
         colors = len(graph.vertices()) 
@@ -118,6 +118,12 @@ class Graph(object):
         genetic.run()
         while(genetic.started() and genetic.generations() < max_epochs):
             genetic.epoch()
+
+        if(genetic.generations() >= max_epochs):
+            print("Failed to Converge. Seeking wisdom of the crowds")
+            coloring = genetic.wisdom_of_artificial_crowds()
+            print(str(coloring))
+
         print(genetic.chromosome() + "  Generation: " + str(genetic.generations()))
 
     @staticmethod
@@ -167,13 +173,14 @@ class Graph(object):
 
 
 def main():
-    g = Graph.random_graph(5, .2)
+    g = Graph.random_graph(20, .7)
     print('Graph:\n', g.to_string())
-    coloring = Graph.greedy_coloring(g)
-    print('Greedy Solution: \n',coloring)
+    #coloring = Graph.greedy_coloring(g)
+    #print('Greedy Solution: \n',coloring)
     #print(str(len(g.vertices)))
-    coloring1 = Graph.welsh_powell(g)
-    print('Welsh Powell Solution: \n', coloring1)
+    #coloring1 = Graph.welsh_powell(g)
+    #print('Welsh Powell Solution: \n', coloring1)
+    Graph.genetic_algorithm(g)
 
 if __name__ == '__main__':
     main()
