@@ -1,5 +1,6 @@
 from random import seed
 from random import random
+from random import randint
 from gene_alg import GeneAlg
 import operator
 
@@ -109,7 +110,7 @@ class Graph(object):
         mutation_rate = 1.0
         crossover_rate = 1.0
         population_size = 50
-        max_epochs = 1
+        max_epochs = 20000
 
         #worst case, every vertex needs a color
         colors = len(graph.vertices()) 
@@ -122,9 +123,9 @@ class Graph(object):
         if(genetic.generations() >= max_epochs):
             print("Failed to Converge. Seeking wisdom of the crowds")
             coloring = genetic.wisdom_of_artificial_crowds()
-            print(str(coloring))
-
-        print(genetic.chromosome() + "  Generation: " + str(genetic.generations()))
+            return coloring
+        else:
+            return genetic.coloring()
 
     @staticmethod
     def welsh_powell(graph):
@@ -170,17 +171,65 @@ class Graph(object):
                         # print('color', u.vertex, 'to', color)
                         colored.append(u)
         return coloring_dict
+    
+    @staticmethod
+    def is_valid_solution(coloring, g):
+        for v in range(0, len(coloring)):
+            neighbors = g.neighbors_of(v)
+            for n in range(0, len(neighbors)):
+                if(coloring[v] == coloring[neighbors[n].target]):
+                    return False
+        return True
+            
+
+
+def random_tests():
+    iterations = 10
+    max_nodes = 30
+    correct_solutions = {}
+
+    GREEDY = "Greedy"
+    WP = "welsh_powell"
+    GENETIC = "Genetic"
+
+    correct_solutions[GREEDY] = 0
+    correct_solutions[WP] = 0
+    correct_solutions[GENETIC] = 0
+
+    for i in range(0, iterations):
+        print("Graph " + str(i))
+        nodes = randint(0, max_nodes) + 1
+        p = random()
+        g = Graph.random_graph(nodes, p)
+
+        greedy_coloring = Graph.greedy_coloring(g)
+        if(Graph.is_valid_solution(greedy_coloring, g)):
+            correct_solutions[GREEDY] += 1
+
+        wp_coloring = Graph.welsh_powell(g)
+        if(Graph.is_valid_solution(wp_coloring, g)):
+            correct_solutions[WP] += 1
+
+        genetic_coloring = Graph.genetic_algorithm(g)
+        if(Graph.is_valid_solution(genetic_coloring, g)):
+            correct_solutions[GENETIC] += 1
+
+    print("Greedy: " + str(correct_solutions[GREEDY])+ "/" + str(iterations))
+    print("Welsh_Powell: " + str(correct_solutions[WP])+ "/" + str(iterations))
+    print("Genetic: " + str(correct_solutions[GENETIC])+ "/" + str(iterations))
 
 
 def main():
-    g = Graph.random_graph(20, .7)
-    print('Graph:\n', g.to_string())
+    seed()
+    random_tests()
+    #g = Graph.random_graph(20, .7)
+    #print('Graph:\n', g.to_string())
     #coloring = Graph.greedy_coloring(g)
     #print('Greedy Solution: \n',coloring)
     #print(str(len(g.vertices)))
     #coloring1 = Graph.welsh_powell(g)
     #print('Welsh Powell Solution: \n', coloring1)
-    Graph.genetic_algorithm(g)
+    #Graph.genetic_algorithm(g)
 
 if __name__ == '__main__':
     main()

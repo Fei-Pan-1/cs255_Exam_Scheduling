@@ -6,7 +6,6 @@ INFINITY = float("inf")
 
 class Genome(object):
     def __init__(self, n_vertices, n_colors):
-        seed()
         self.fitness = INFINITY
         self.coloring = list()
 
@@ -21,7 +20,6 @@ class Genome(object):
 
 class GeneAlg(object):
     def __init__(self, cross, mut, pop, bits, gene, graph):
-        seed()
         self.crossover_rate = cross
         self.mutation_rate = mut
         self.population_size = pop
@@ -40,7 +38,10 @@ class GeneAlg(object):
         return self.generation
 
     def fittest(self):
-        return self.fittestGenome
+        return self.fittest_genome
+
+    def coloring(self):
+        return self.genomes[self.fittest_genome].coloring
 
     def chromosome(self):
         genome = self.genomes[self.fittest_genome]
