@@ -124,65 +124,76 @@ class Graph(object):
             #print(genomes[g].to_string())
         print("FITTESTSCORE:::"+str(genenetic.fittest_score))
         return coloring
-#    @staticmethod
-#    def welsh_powell(graph):
-#        coloring_dict = {}
-#        vertices = graph.vertices()
-#
-#        # sort vertices according to the decreasing number of their neighbors
-#        sorted_vertices = sorted(vertices, key=lambda kv: len(kv.neighbors()), reverse = True)
-#
-#        #for v in sorted_vertices:
-#            #print(v.to_string())
-#
-#        color = -1
-#        for v in sorted_vertices:
-#            if v.vertex in coloring_dict:
-#                continue
-#            # assign a new color
-#            color += 1
-#            coloring_dict[v.vertex] = color
-#            colored = [v]
-#            for u in sorted_vertices:
-#                if u[0] not in coloring_dict:
-#                    #print('checking', u)
-#                    isNeighborOfColored = False
-#                    for w in colored:
-#                        if u[0] in w[1].neighbors:
-#                            #print(u[0], w[0])
-#                            isNeighborOfColored = True
-#                            break
-#                    if not isNeighborOfColored:
-#                        coloring_dict[u[0]] = color
-#                        #print('color', u[0], 'to', color)
-#                        colored.append(u)
-#        return coloring_dict
 
 
+    @staticmethod
+    def welsh_powell(graph):
+        coloring_dict = {}
+        vertices = graph.vertices()
+
+        # sort vertices according to the decreasing number of their neighbors
+        sorted_vertices = sorted(vertices, key=lambda kv: len(kv.neighbors()), reverse=True)
+        print('sorted_vertices:', [e.vertex for e in sorted_vertices])
+
+        # Go through vertexes in the order of decreasing number of neighbors.
+        color = 0
+        for i in range(len(sorted_vertices)):
+            v = sorted_vertices[i]
+            # Skip if the vertex is already colored.
+            if v.vertex in coloring_dict:
+                continue
+            # print('checking: ', v.vertex, [e.target for e in v.neighbors()])
+            if i != 0:
+                color += 1
+            # Color the current vertex.
+            coloring_dict[v.vertex] = color
+            # A list of vertices that colored with the current color.
+            colored = [v]
+
+            # Try to color the rest vertices if possible.
+            for j in range(i + 1, len(sorted_vertices)):
+                u = sorted_vertices[j]
+                if u.vertex not in coloring_dict:
+                    hasColoredNeighbor = False
+                    # Check if vertex u has any neighbor that colored with the current color.
+                    # If vertex u doesn't have any neighbor colored with the current color, we color vertex u.
+                    neighbors = set([x.target for x in u.neighbors()])
+                    for w in colored:
+                        # If find one vertex in current color list (colored) is u's neighbor,
+                        # means vertex u has neighbor colored with the current color, we skip coloring vertex u.
+                        if w.vertex in neighbors:
+                            hasColoredNeighbor = True
+                            break
+                    # If vertex u doesn't have any neighbor colored with the current color, we color vertex u, and add
+                    # it into the list of vertexes colored with the current color.
+                    if not hasColoredNeighbor:
+                        coloring_dict[u.vertex] = color
+                        # print('color', u.vertex, 'to', color)
+                        colored.append(u)
+        return coloring_dict
 
 
 def main():
     g = Graph.random_graph(5, .2)
-    #g.print_graph()
+    print('Graph:\n', g.to_string())
     coloring = Graph.greedy_coloring(g)
     print('Greedy Solution: \n',coloring)
     #print(str(len(g.vertices)))
-    #coloring1 = Graph.welsh_powell(g)
-    #print('Welsh Powell Solution: \n', coloring1)
+    coloring1 = Graph.welsh_powell(g)
+    print('Welsh Powell Solution: \n', coloring1)
 
 if __name__ == '__main__':
     main()
 
 
-
-#g = Graph.random_graph(800, .7)
-#print(g.to_string())
-#g.print_graph()
-#coloring = Graph.greedy_coloring(g)
-#print('Greedy Solution: \n',coloring)
-#print(str(len(g.vertices)))
-#coloring1 = Graph.welsh_powell(g)
-#print('Welsh Powell Solution: \n', coloring1)
+g = Graph.random_graph(800, .7)
+# print(g.to_string())
+# g.print_graph()
+coloring = Graph.greedy_coloring(g)
+print('Greedy Solution: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
+# print(str(len(g.vertices)))
+coloring1 = Graph.welsh_powell(g)
+print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
 #print(g.vertices)
 #colroing = Graph.genetic_algorithm(g)
 #print("final:::" + colroing.to_string())
