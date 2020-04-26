@@ -2,6 +2,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Graph {
 	private List<VertexNode> adjList;
@@ -61,21 +62,28 @@ public class Graph {
 		return graph;
 	}
 
-	public static Genome geneticAlgorithm(Graph graph) {
-		mutationRate = 1.0;
-		crossoverRate = 1.0;
-		populationSize = 50;
-		maxEpochs = 20000;
-		colors = graph.verticies().size();
+	public static Map<Integer, Integer> geneticAlgorithm(Graph graph) {
+		float mutationRate = 1;
+		float crossoverRate = 1;
+		int populationSize = 50;
+		int maxEpochs = 20000;
+		int colors = graph.verticies().size();
+		int chromosomeLength = graph.nVertices;
 
-		GenAlg genetic = new GeneAlg(graph,
+		Map<Integer, Integer> coloring = new HashMap<>();
+		GeneAlg genetic = new GeneAlg(graph,
 									populationSize,
 									crossoverRate,
 									mutationRate,
 									colors,
-									maxEpochs);
-		Genome chromosome = genetic.run();
-		return chromosome;
+									maxEpochs,
+									chromosomeLength);
+		List<Integer> chromosome = genetic.run().chromosome;
+
+		for(int v=0; v<chromosome.size(); v++) {
+			coloring.put(v, chromosome.get(v));
+		}
+		return coloring;
 	}
 
 
@@ -116,13 +124,42 @@ public class Graph {
 		return result;
 	}
 
+	public static boolean isValidColoring(Graph g, Map<Integer, Integer> coloring) {
+		for(int v=0; v<g.nVertices; v++) {
+			List<EdgeNode> neighbors = g.neighborOf(v);
+			for(EdgeNode neighbor : neighbors) {
+				if(coloring.get(v) == coloring.get(neighbor.target) &&
+					coloring.get(v) == coloring.get(neighbor.source)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public static void main(String[] args) {
-		Graph g = Graph.randomGraph(4, .2);
+		//Graph g = Graph.randomGraph(5000, .4);
 		//Map<Integer, Integer> coloring = Graph.greedyColoring(g);
 		//System.out.println(coloring.toString());
-		System.out.println(g.toString());
+		//System.out.println(g.toString());
 		//System.out.println(coloringToString(coloring));
-		Genome gen = Graph.geneticAlgorithm(g);
+		//Map<Integer, Integer> coloring = Graph.geneticAlgorithm(g);
+		//System.out.println(gen.toString());
+		//System.out.println(gen.chromosome.toString());
+		
+		Random random = new Random();
+		int iterations = 10;
+		int count = 0;
+
+		for(int i=0; i<iterations; i++) {
+			int graphSize = random.nextInt(50) + 1;
+			Graph g = Graph.randomGraph(graphSize, random.nextFloat());
+
+			Map<Integer, Integer> coloring = Graph.geneticAlgorithm(g);
+			if(Graph.isValidColoring(g, coloring)) count++;
+		}
+
+		System.out.println(count + " out of " + iterations + " correct");
 
 	}
 }

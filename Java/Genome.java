@@ -1,20 +1,27 @@
-	class Genome(nVerticies, nColors) {
-		List<Integer> chromosome;
-		int fitness;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
-		public Genome(nVerticies, nColors) {
-			chromosome = new ArrayList<>(nVerticies);
+public class Genome {
+	List<Integer> chromosome;
+	int fitness;
 
-			for(int i=0; i<nVerticies; i++) {
-				chromosome.add(new Integer(Math.random() * nColors);
-			}
-		}
+	public Genome(int nVerticies, int nColors) {
+		Random random = new Random();
+		chromosome = new ArrayList<>(nVerticies);
+		fitness = 99999999;
 
-		public String toString() {
-			result = "Chromosome:  ";
-			for(Integer i : chromosome) {
-				result = result + i + " ";
-			}
-			result = result + ":::fitness: " + fitness;
+		for(int i=0; i<nVerticies; i++) {
+			chromosome.add(Integer.valueOf(random.nextInt(nColors)));
 		}
 	}
+
+	public String toString() {
+		String result = "Chromosome:  ";
+		for(Integer i : chromosome) {
+			result = result + i + " ";
+		}
+		result = result + ":::fitness: " + fitness;
+		return result;
+	}
+}

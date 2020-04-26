@@ -1,5 +1,8 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Random;
 
 
 public class GeneAlg {
@@ -9,32 +12,40 @@ public class GeneAlg {
 	float fittestScore;
 	int generation;
 	List<Genome> genomes;
+	Graph graph;
+	boolean busy;
+
+	static Random random = new Random();
 
 
 	public GeneAlg(Graph graph, 
 					int popSize,
 					float crossRate,
 					float mutRate,
-					int gene_length,
-					int max_epochs) {
+					int geneLength,
+					int maxEpochs,
+					int chromeLength) {
 
 		populationSize = popSize;
 		crossoverRate = crossRate;
 		mutationRate = mutRate;
-		this.gene_length = gene_length; //n of colors
-		chromosomeLength = graph.verticies().size();
+		this.geneLength = geneLength; //n of colors
+		chromosomeLength = chromeLength;
+		this.graph = graph;
 
 		fittestGenome = -1;
 		secondFittestGenome = -1;
 		fittestScore = 999999;
 		generation = 0;
-		MAX_EPOCHS = max_epochs;
+		MAX_EPOCHS = maxEpochs;
+		busy = false;
+		
 
 		genomes = new ArrayList<>(populationSize);
 
 		for(int i=0; i<populationSize; i++) {
-			genome = new Genome(chromosomeLength, gene_length);
-			sccore = computeScore(genome.chromosome);
+			Genome genome = new Genome(chromosomeLength, geneLength);
+			int score = computeScore(genome.chromosome);
 			genome.fitness = score;
 			genomes.add(genome);
 
@@ -48,10 +59,9 @@ public class GeneAlg {
 		int nextFittest = 999999;
 		//second fittest separately just to be sure
 		for(int i=0; i<populationSize; i++) {
-			int nextFittest = 999999;
 			if(i != fittestGenome) {
-				if(genome.fitness < nextFittest) {
-					nextFittest = genome.fitness;
+				if(genomes.get(i).fitness < nextFittest) {
+					nextFittest = genomes.get(i).fitness;
 					secondFittestGenome = i;
 				}
 			}
@@ -60,13 +70,13 @@ public class GeneAlg {
 
 	Genome maxFitness(Genome g1, Genome g2) {
 		if(g1.fitness < g2.fitness) {
-			return true;
+			return g1;
 		}
-		return false;
+		return g2;
 	}
 
 	Genome randomGenome() {
-		return genomes[(int)Math.random()*populationSize-1]
+		return genomes.get(random.nextInt(populationSize));
 	}
 
 	Genome[] parentSelection1() {
@@ -83,7 +93,7 @@ public class GeneAlg {
 	}
 
 	Genome[] parentSelection2() {
-		Genome parents = new Genome[2];
+		Genome[] parents = new Genome[2];
 		parents[0] = genomes.get(fittestGenome);
 		parents[1] = genomes.get(secondFittestGenome);
 
@@ -91,12 +101,12 @@ public class GeneAlg {
 	}
 
 	Genome crossover(Genome p1, Genome p2) {
-		if(Math.random() > crossoverRate && p1 != p1) {
+		if(random.nextFloat() > crossoverRate) {
 			return p1;
 		}
 
-		int crossoverPoint = (int)Math.random()*chromosomeLength-1;
-		child = Genome(chromosomeLength, gene_length);
+		int crossoverPoint = random.nextInt(chromosomeLength);
+		Genome child = new Genome(chromosomeLength, geneLength);
 
 		for(int i=0; i<chromosomeLength; i++) {
 			if(i <= crossoverPoint) {
@@ -112,7 +122,8 @@ public class GeneAlg {
 		List<EdgeNode> neighbors = graph.neighborOf(vertex);
 
 		for(EdgeNode neighbor : neighbors) {
-			if(coloring.get(vertex) == coloring.get(neighbor.target))
+			if(coloring.get(vertex) == coloring.get(neighbor.target) &&
+				coloring.get(vertex) == coloring.get(neighbor.source))
 				return true;
 		}
 		return false;
@@ -123,8 +134,9 @@ public class GeneAlg {
 		List<EdgeNode> neighbors = graph.neighborOf(vertex);
 
 		for(EdgeNode neighbor : neighbors) {
-			if(coloring.get(vertex) == coloring.get(neighbor.target)) {
-				matchings.add(new Integer(neighbor.target));
+			if(coloring.get(vertex) == coloring.get(neighbor.source) &&
+				coloring.get(vertex) == coloring.get(neighbor.target)) {
+				matchings.add(Integer.valueOf(neighbor.target));
 			}
 		}
 		return matchings;
@@ -139,9 +151,9 @@ public class GeneAlg {
 			adjacentColors.add(coloring.get(neighbor.target));
 		}
 
-		for(int color=0; color<gene_length; color++) {
-			if(!adjacentColors.contains(new Integer(color)) {
-				validColors.add(new Integer(color));
+		for(int color=0; color<geneLength; color++) {
+			if(!adjacentColors.contains(Integer.valueOf(color))) {
+				validColors.add(Integer.valueOf(color));
 			}
 		}
 
@@ -149,26 +161,26 @@ public class GeneAlg {
 	}
 
 	Genome mutation1(Genome g) {
-		if(Math.random() > mutationRate) {
+		if(random.nextFloat() > mutationRate) {
 			return g;
 		}
 
 		for(int v=0; v<chromosomeLength; v++) {
 			if(isColorMatching(v, g.chromosome)) {
-				validColors = availableColors(v, g.chromosome);
-				g.chromosome.set(v, validColors.get());
+				List<Integer> validColors = availableColors(v, g.chromosome);
+				g.chromosome.set(v, validColors.get(random.nextInt(validColors.size())));
 			}
 		}
 		return g;
 	}
 
 	Genome mutation2(Genome g) {
-		if(Math.random() > mutationRate) {
+		if(random.nextFloat() > mutationRate) {
 			return g;
 		}
 		for(int v=0; v<chromosomeLength; v++) {
-			if(isColorMatching(vertex, g.chromosome)) {
-				g.chromosome.set(v, new Integer((int)Math.random()*gene_length-1))
+			if(isColorMatching(v, g.chromosome)) {
+				g.chromosome.set(v, Integer.valueOf(random.nextInt(geneLength)));
 			}
 		}
 		return g;
@@ -177,13 +189,17 @@ public class GeneAlg {
 	int computeScore(List<Integer> chromosome) {
 		int badEdges = 0;
 
-		for(Integer v : chromosome) {
+		for(int v=0; v<chromosome.size(); v++) {
 			badEdges += colorMatchings(v, chromosome).size();
 		}
 		return badEdges;
 	}
 
 	public void updateFitnessScores() {
+		fittestScore = 999999;
+		fittestGenome = -1;
+		secondFittestGenome = -1;
+
 		for(int i=0; i<genomes.size(); i++) {
 			Genome genome = genomes.get(i);
 			int score = computeScore(genome.chromosome);
@@ -194,8 +210,22 @@ public class GeneAlg {
 				fittestGenome = i;
 				fittestScore = score;
 			}
-
 			genomes.set(i, genome);
+
+			if(genomes.get(i).fitness <= 0) {
+				busy = false;
+			}
+		}
+
+		int nextFittest = 999999;
+		//second fittest separately just to be sure
+		for(int i=0; i<populationSize; i++) {
+			if(i != fittestGenome) {
+				if(genomes.get(i).fitness < nextFittest) {
+					nextFittest = genomes.get(i).fitness;
+					secondFittestGenome = i;
+				}
+			}
 		}
 	}
 
@@ -209,37 +239,45 @@ public class GeneAlg {
 		while(noobs < populationSize) {
 			if(fittestScore > 4) {
 				Genome[] parents = parentSelection1();
-				child1 = crossover(parents[0], parents[1]);
+				Genome child1 = crossover(parents[0], parents[1]);
 				child1 = mutation1(child1);
 				nextgen.add(child1);
 
-				child2 = crossover(parents[1], parents[0]);
+				Genome child2 = crossover(parents[1], parents[0]);
 				child2 = mutation1(child2);
 				nextgen.add(child2);
 			} else {
 				Genome[] parents = parentSelection2();
-				child1 = crossover(parents[0], parents[1]);
+				Genome child1 = crossover(parents[0], parents[1]);
 				child1 = mutation2(child1);
 				nextgen.add(child1);
 
-				child2 = crossover(parents[1], parents[0]);
+				Genome child2 = crossover(parents[1], parents[0]);
 				child2 = mutation2(child2);
 				nextgen.add(child2);
 			}
-			noobs++;
+			noobs+=2;
 		}
 		genomes = nextgen;
 		generation++;
+		if(generation >= MAX_EPOCHS) {
+			busy = false;
+		}
 	}
 
 	public Genome run() {
-		while(fittestScore > 0 && generation <= MAX_EPOCHS) {
+		busy = true;
+		while(busy) {
 			epoch();
 		}
 
 		if(generation >= MAX_EPOCHS) {
 			System.out.println("Failed");
 		}
-		return genomes.get(fittestGenome);
+
+		Genome g = genomes.get(fittestGenome);
+		System.out.println("Score: " + g.fitness);
+		System.out.println("Generations: " + generation);
+		return g;
 	}
 }
