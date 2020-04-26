@@ -4,7 +4,6 @@ from gene_alg import GeneAlg
 import operator
 
 # implementation of an undirected graph using Adjacency Lists
-
 class EdgeNode(object):
     def __init__(self, source, target):
        self.source = source
@@ -114,17 +113,12 @@ class Graph(object):
 
         #worst case, every vertex needs a color
         colors = len(graph.vertices()) 
-        #colors = 2
 
-        genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
-        coloring = genenetic.run()
-        genomes = genenetic.genomes
-
-        #for g in range(0, len(genomes)):
-            #print(genomes[g].to_string())
-        print("FITTESTSCORE:::"+str(genenetic.fittest_score))
-        return coloring
-
+        genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
+        genetic.run()
+        while(genetic.started() and genetic.generations() < max_epochs):
+            genetic.epoch()
+        print(genetic.chromosome() + "  Generation: " + str(genetic.generations()))
 
     @staticmethod
     def welsh_powell(graph):
@@ -183,19 +177,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-g = Graph.random_graph(800, .7)
-# print(g.to_string())
-# g.print_graph()
-coloring = Graph.greedy_coloring(g)
-print('Greedy Solution: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
-# print(str(len(g.vertices)))
-coloring1 = Graph.welsh_powell(g)
-print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
-#print(g.vertices)
-#colroing = Graph.genetic_algorithm(g)
-#print("final:::" + colroing.to_string())
 
 
 

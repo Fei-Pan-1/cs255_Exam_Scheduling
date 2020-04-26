@@ -1,253 +1,256 @@
 from random import seed
 from random import randint
 from random import random
-seed()
+
+INFINITY = float("inf")
 
 class Genome(object):
-    def __init__(self, n_vertices, n_colors, graph):
-        #length should be number of verticies
-        #each is assigned a color from 0 to color-1
-        self.chromosome = list()
-        self.fitness = self.compute_score(graph)
+    def __init__(self, n_vertices, n_colors):
+        seed()
+        self.fitness = INFINITY
+        self.coloring = list()
 
-        for v in range(0, n_vertices):
-            self.chromosome.append(randint(0, n_colors-1))
+        for i in range(0, n_vertices):
+            self.coloring.append(randint(0, n_colors))
 
-    def to_string(self):
-        result = "Chromosome: "
-
-        for i in range(0, len(self.chromosome)):
-            result = result + str(self.chromosome[i]) + " "
-        result = result + " :: fitness: " + str(self.fitness)
-
-        return result
-    
-    def assign_score(self, score):
-        self.fitness = score
-
-    def compute_score(self, graph):
-        bad_edges = 0
-        for i in range(0, len(self.chromosome)):
-            neighbors = graph.neighbors_of(vertex)
-            for neighbor in neighbors:
-                if(self.chromosome[i] == self.chromosome[neighbor.target]):
-                    bad_edges += 1
+    @staticmethod
+    def from_chromosome(n_vertices, n_colors, chromosome):
+        g = Genome(n_vertices, n_colors)
+        g.coloring = chromosome
+        return g
 
 class GeneAlg(object):
-    def __init__(self, graph, pop_size, cross_rate, mut_rate, gene_length, max_epochs):
+    def __init__(self, cross, mut, pop, bits, gene, graph):
+        seed()
+        self.crossover_rate = cross
+        self.mutation_rate = mut
+        self.population_size = pop
+        self.chromosome_length = bits
+        self.gene_length = gene
+        self.generation = 0
+        self.busy = False
+        self.fittest_genome = 0
+        self.best_fitness_score = INFINITY
         self.genomes = list()
-
-        self.population_size = pop_size
-        self.crossover_rate = cross_rate
-        self.mutation_rate = mut_rate
-        # number of vertices
-        self.chromosome_length = len(graph.vertices())
-        # number of colors
-        self.gene_length = gene_length
         self.graph = graph
 
-        self.fittest_genome = -1
-        self.fittest_score = 99999999
-        self.second_fittest_genome = -1
-        self.generation = 0
-        self.MAX_EPOCHS = max_epochs
+        self.create_start_population()
+
+    def generations(self):
+        return self.generation
+
+    def fittest(self):
+        return self.fittestGenome
+
+    def chromosome(self):
+        genome = self.genomes[self.fittest_genome]
+        result = ""
+        for i in range(0, len(genome.coloring)):
+            result = result + str(genome.coloring[i]) + " "
+        return result
+
+    def started(self):
+        return self.busy
+
+    def stop(self):
+        self.busy = False
+
+    def calculate_fitness(self, chromosome):
+        bad_edges = 0
+        for vertex in range(0, len(chromosome)):
+            adj_colors = self.adjacent_colors(vertex, chromosome)
+            for color in range(0, len(adj_colors)):
+                if(chromosome[vertex] == adj_colors[color]):
+                    bad_edges += 1
+        return bad_edges
+
+    def update_fitness_score(self):
+        self.fittest_genome = 0
+        self.best_fitness_score = INFINITY
 
         for i in range(0, self.population_size):
-            genome = Genome(self.chromosome_length, self.gene_length, self.graph)
-            score = self.compute_score(genome.chromosome)
+            chromosome = self.genomes[i].coloring
+            self.genomes[i].fitness = self.calculate_fitness(chromosome)
 
-            # get the initial fittest genome
-            genome.assign_score(score)
-            if(score <= self.fittest_score):
-                self.fittest_score = score
+            if(self.genomes[i].fitness < self.best_fitness_score):
+                self.best_fitness_score = self.genomes[i].fitness
                 self.fittest_genome = i
-            self.genomes.append(genome)
 
-        # get the initial second fittest genome
-        next_fittest = 99999999
-        for i, genome in enumerate(self.genomes):
-            if(i != self.fittest_genome):
-                if(genome.fitness < next_fittest):
-                    next_fittest = genome.fitness
-                    self.second_fittest_genome = i
+            if(self.genomes[i].fitness == 0):
+                self.busy = False
             
+    def create_start_population(self):
+        self.genomes.clear()      
+        for i in range(0, self.population_size):
+            self.genomes.append(Genome(self.chromosome_length, self.gene_length))
+        
+        self.generation = 0
+        self.fittest_genome = 0
+        self.best_fitness_score = INFINITY
 
+    def run(self):
+        self.create_start_population()
+        self.busy = True
 
-    def max_fitness(self, genome1, genome2):
-        if(genome1.fitness < genome2.fitness):
-            return genome1
-        return genome2
+    def epoch(self):
+        # constant defined in paper
+        SELECTION_MUTTION_THRESHOLD = 4
+        next_gen = list()
+        self.update_fitness_score()
+        noobs = 0
 
-    def random_genome(self):
-        return self.genomes[randint(0, self.population_size-1)]
+        # The paper discusses keeping the population size constant
+        # but the psuedo-code does not mention how. So I think I 
+        # can either create 2 children to replace the parents. Or
+        # I can take the child and the fittest of the 2 parents
+        # into the next generation. I will do the latter.
+
+        while(noobs < self.population_size):
+            if(self.best_fitness_score > SELECTION_MUTTION_THRESHOLD):
+                parents = self.parent_selection1()
+                child = self.crossover(parents[0], parents[1])
+                child = self.mutation1(child)
+                next_gen.append(child)
+
+                parent = self.max_fitness(parents[0], parents[1])
+                next_gen.append(parent)
+            else:
+                parents = self.parent_selection2()
+                child = self.crossover(parents[0], parents[1])
+                child = self.mutation2(child)
+                next_gen.append(child)
+
+                parent = self.max_fitness(parents[0], parents[1])
+                next_gen.append(parent)
+
+            noobs += 2
+        self.genomes = next_gen
+        self.generation += 1
+
+    def max_fitness(self, g1, g2):
+        if(g1.fitness < g2.fitness):
+            return g1
+        return g2
 
     def parent_selection1(self):
-        tmp_parent1 = self.random_genome()
-        tmp_parent2 = self.random_genome()
-        parent1 = self.max_fitness(tmp_parent1, tmp_parent2)
+        parents = list()
+        # two random chromosomes from population
+        g1 = self.genomes[randint(0, self.population_size-1)]
+        g2 = self.genomes[randint(0, self.population_size-1)]
+        # take the fitter of the two
+        parent1 = self.max_fitness(g1, g2)
 
-        tmp_parent1 = self.random_genome()
-        tmp_parent2 = self.random_genome()
-        parent2 = self.max_fitness(tmp_parent1, tmp_parent2)
+        # repeat for the second parent
+        g3 = self.genomes[randint(0, self.population_size-1)]
+        g4 = self.genomes[randint(0, self.population_size-1)]
+        parent2 = self.max_fitness(g3, g4)
 
-        return parent1, parent2
+        parents.append(parent1)
+        parents.append(parent2)
+        return parents
 
-#   parent1 = the top performing chromosome;
-#   parent2 = the top performing chromosome;
-
+        
     def parent_selection2(self):
-        parent1 = self.genomes[self.fittest_genome]
-        parent2 = self.genomes[self.second_fittest_genome]
+        # get the top two performers
+        first = 0
+        second = 0
+        best_so_far = INFINITY
+        for i in range(0, self.population_size):
+            if(self.genomes[i].fitness < best_so_far):
+                best_so_far = self.genomes[i].fitness
+                second = first
+                first = i
 
-        return parent1, parent2
+        parents = list()
+        g1 = self.genomes[first]
+        g2 = self.genomes[second]
 
-#       crosspoint = random point along a chromosome;
-#       child = colors up to and including crosspoint from parent 1 +
-#       colors after crosspoint to the end of the chromosome from
-#       parent2;
+        parents.append(g1)
+        parents.append(g2)
+        return parents
 
-    def crossover(self, parent1, parent2):
-        if((random() > self.crossover_rate) and (parent1 != parent1)):
-            #don't corossover
-            return parent1, parent2
-
-        crossover_point = randint(0, self.chromosome_length-1)
-        child = Genome(self.chromosome_length, self.gene_length, self.graph)
-
-        for i in range(0, self.chromosome_length):
-            if(i <= crossover_point):
-                child.chromosome[i] = parent1.chromosome[i]
-            else:
-                child.chromosome[i] = parent2.chromosome[i]
-
-        return child
-
-
-#   Checks if a vertex has a matching color with any of 
-#   its neighbors.
-
-    def is_color_matching(self, vertex, coloring):
+    # Given a vertex, check to see if any of the 
+    # adjacent verticies have the same color
+    def has_adjacent_color(self, vertex, coloring):
         neighbors = self.graph.neighbors_of(vertex)
-        for neighbor in neighbors:
-            if(coloring[vertex] == coloring[neighbor.target]):
+        for v in range(0, len(neighbors)):
+            if(coloring[vertex] == coloring[neighbors[v].target]):
                 return True
         return False
 
-#   creates a list of vertices whos colors match with 
-#   a given vertex
-
-    def color_matchings(self, vertex, coloring):
-        matchings = list()
+    # Given a vertex, return a list of all colors
+    # of adjacent verticies
+    def adjacent_colors(self, vertex, coloring):
+        colors = list()
         neighbors = self.graph.neighbors_of(vertex)
 
-        for neighbor in neighbors:
-            if(coloring[vertex] == coloring[neighbor.target]):
-                matchings.append(neighbor.target)
-        return matchings
-
-# creates a list of colors not used by neighbors 
-# of a given vertex
-    def available_colors(self, vertex, coloring):
-        valid_colors = list()
-        adjacent_colors = list()
-        neighbors = self.graph.neighbors_of(vertex)
-
-        for neighbor in neighbors:
-            adjacent_colors.append(coloring[neighbor.target])
-        
-
-        for color in range(0, self.gene_length):
-            if(color not in adjacent_colors):
-                valid_colors.append(color)
-        return valid_colors
-
+        for v in range(0, len(neighbors)):
+            if(v != vertex):
+                colors.append(coloring[neighbors[v].target])
+        return colors
 
     def mutation1(self, genome):
-        if(random() < self.mutation_rate):
-            chromosome = genome.chromosome
-            for vertex in range(0, len(chromosome)):
-                if(self.is_color_matching(vertex, chromosome)):
-                    # we have neighbors with the same color
-                    # get a list of available colors
-                    valid_colors = self.available_colors(vertex, chromosome)
-                    # assign vertex to valid random color
-                    genome.chromosome[vertex] = valid_colors[randint(0, len(valid_colors)-1)]
-        return genome
+        if(random() > self.mutation_rate):
+            return genome
 
+        coloring = genome.coloring
+        new_coloring = list()
+
+        # make a deep copy of the chromosome
+        for i in range(0, len(coloring)):
+            new_coloring.append(coloring[i])
+
+        # for each vertex in the chromosome
+        for vertex in range(0, len(coloring)):
+            # if the vertex color has the same color as 
+            # adjacent verticies
+            if(self.has_adjacent_color(vertex, coloring)):
+                adj_colors = self.adjacent_colors(vertex, coloring)
+                # select a random color that is not an adjacent color
+                color = randint(0, self.gene_length-1)
+                while(color not in adj_colors):
+                    color = randint(0, self.gene_length-1)
+
+                # update color 
+                new_coloring[vertex] = color
+        g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
+        return g
 
     def mutation2(self, genome):
-        if(random() < self.mutation_rate):
-            chromosome = genome.chromosome
-            for vertex in range(len(chromosome)):
-                if(self.is_color_matching(vertex, chromosome)):
-                    genome.chromosome[vertex] = randint(0, self.gene_length-1)
-        return genome
+        if(random() > self.mutation_rate):
+            return genome
 
-    def compute_score(self, chromosome):
-        bad_edges = 0
+        coloring = genome.coloring
+        new_coloring = list()
 
-        for i in range(0, len(chromosome)):
-            bad_edges += len(self.color_matchings(i, chromosome))
-        return bad_edges
+        # make a deep copy of the chromosome
+        for i in range(0, len(coloring)):
+            new_coloring.append(coloring[i])
 
-# The fitness score is defined as the number of bad edges, where
-# a bad edge is an edge between adjacent vertices with the same color.
+        # for each vertex in the chromosome
+        for vertex in range(0, len(coloring)):
+            # if vertex color has the same color as
+            # adjacent colors
+            if(self.has_adjacent_color(vertex, coloring)):
+                # pick a random color and update
+                color = randint(0, self.gene_length-1)
+                new_coloring[vertex] = color
 
-    def update_fitness_scores(self):
-        for i, genome in enumerate(self.genomes):
-            chromosome = genome.chromosome
-            score = self.compute_score(chromosome)
-            self.genomes[i].assign_score(score)
-            
-            if(score <= self.fittest_score):
-                self.second_fittest_genome = self.fittest_genome
-                self.fittest_genome = i
-                self.fittest_score = score
+        g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
+        return g
 
-    def epoch(self):
-        # constant decided by paper through expermimentation
-        SELECTION_MUTATION_THRESHOLD = 4
-        next_generation = list()
 
-        self.update_fitness_scores()
+    def crossover(self, parent1, parent2):
+        if(random() > self.crossover_rate):
+            return parent1
 
-        noobs = 0
-        while(noobs < self.population_size):
-            if(self.fittest_score > 4):
-                parent1, parent2 = self.parent_selection1()
-                child1 = self.crossover(parent1, parent2)
-                child1 = self.mutation1(child1)
-                next_generation.append(child1)
+        crosspoint = randint(0, self.chromosome_length-1)
+        chromosome = list()
 
-                child2 = self.crossover(parent1, parent2)
-                child2 = self.mutation1(child2)
-                next_generation.append(child2)
-
+        for v in range(0, self.chromosome_length):
+            if(v <= crosspoint):
+                chromosome.append(parent1.coloring[v])
             else:
-                parent1, parent2 = self.parent_selection2()
-                child1 = self.crossover(parent1, parent2)
-                child1 = self.mutation2(child1)
-                next_generation.append(child1)
-
-                child2 = self.crossover(parent1, parent2)
-                child2 = self.mutation2(child2)
-                next_generation.append(child2)
-            noobs += 1
-
-        self.genomes = next_generation
-        self.generation += 1
-        print("Generation: " + str(self.generation) + " fittest: " +str(self.fittest_score), end="\r", flush=True)
-
-#TODO: Wisdom of the crowds
-
-    def run(self):
-        while(self.fittest_score > 0 and self.generation <= self.MAX_EPOCHS):
-            self.epoch()
-
-        if(self.generation >= self.MAX_EPOCHS and self.fittest_score > 0):
-            print("Failed to converge in "+ str(self.MAX_EPOCHS) + " epochs")
-            #wisdom of the crouds
-
-        print("Geneeration:::" + str(self.generation))
-        return self.genomes[self.fittest_genome]
-
+                chromosome.append(parent2.coloring[v])
+        child = Genome.from_chromosome(self.chromosome_length, self.gene_length, chromosome)
+        return child
