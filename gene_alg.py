@@ -13,14 +13,14 @@ class Genome(object):
         for i in range(0, n_vertices):
             self.coloring.append(randint(0, n_colors))
 
-    @classmethod
+    @staticmethod
     def from_chromosome(n_vertices, n_colors, chromosome):
         g = Genome(n_vertices, n_colors)
         g.coloring = chromosome
         return g
 
 class GeneAlg(object):
-    def __init__(cross, mut, pop, bits, gene, graph):
+    def __init__(self, cross, mut, pop, bits, gene, graph):
         seed()
         self.crossover_rate = cross
         self.mutation_rate = mut
@@ -36,17 +36,17 @@ class GeneAlg(object):
 
         self.create_start_population()
 
-    def generation(self):
+    def generations(self):
         return self.generation
 
     def fittest(self):
         return self.fittestGenome
 
     def chromosome(self):
-        genome = self.genomes[fittestGenome]
+        genome = self.genomes[self.fittest_genome]
         result = ""
-        for i in range(genome.chromosome):
-            result = result + genome.chromosome[i] + " "
+        for i in range(0, len(genome.coloring)):
+            result = result + str(genome.coloring[i]) + " "
         return result
 
     def started(self):
@@ -55,13 +55,22 @@ class GeneAlg(object):
     def stop(self):
         self.busy = False
 
+    def calculate_fitness(self, chromosome):
+        bad_edges = 0
+        for vertex in range(0, len(chromosome)):
+            adj_colors = self.adjacent_colors(vertex, chromosome)
+            for color in range(0, len(adj_colors)):
+                if(chromosome[vertex] == adj_colors[color]):
+                    bad_edges += 1
+        return bad_edges
+
     def update_fitness_score(self):
         self.fittest_genome = 0
         self.best_fitness_score = INFINITY
 
         for i in range(0, self.population_size):
             chromosome = self.genomes[i].coloring
-            #genomes[i].fitness = calcFitness###########################
+            self.genomes[i].fitness = self.calculate_fitness(chromosome)
 
             if(self.genomes[i].fitness < self.best_fitness_score):
                 self.best_fitness_score = self.genomes[i].fitness
@@ -69,11 +78,10 @@ class GeneAlg(object):
 
             if(self.genomes[i].fitness == 0):
                 self.busy = False
-
             
     def create_start_population(self):
         self.genomes.clear()      
-        for i in range(0, population_size):
+        for i in range(0, self.population_size):
             self.genomes.append(Genome(self.chromosome_length, self.gene_length))
         
         self.generation = 0
@@ -104,7 +112,7 @@ class GeneAlg(object):
                 child = self.mutation1(child)
                 next_gen.append(child)
 
-                parent = max_fitness(parents[0], parents[1])
+                parent = self.max_fitness(parents[0], parents[1])
                 next_gen.append(parent)
             else:
                 parents = self.parent_selection2()
@@ -112,30 +120,30 @@ class GeneAlg(object):
                 child = self.mutation2(child)
                 next_gen.append(child)
 
-                parent = max_fitness(parents[0], parents[1])
+                parent = self.max_fitness(parents[0], parents[1])
                 next_gen.append(parent)
 
             noobs += 2
         self.genomes = next_gen
         self.generation += 1
 
-    def max_fitness(g1, g2):
-        if(g1.fitness < g2.fitness)
+    def max_fitness(self, g1, g2):
+        if(g1.fitness < g2.fitness):
             return g1
         return g2
 
     def parent_selection1(self):
         parents = list()
         # two random chromosomes from population
-        g1 = self.genomes[randint(0, population_size-1)]
-        g2 = self.genomes[randint(0, population_size-1)]
+        g1 = self.genomes[randint(0, self.population_size-1)]
+        g2 = self.genomes[randint(0, self.population_size-1)]
         # take the fitter of the two
-        parent1 = max_fitness(g1, g2)
+        parent1 = self.max_fitness(g1, g2)
 
         # repeat for the second parent
-        g3 = self.genomes[randint(0, population_size-1)]
-        g4 = self.genomes[randint(0, population_size-1)]
-        parent2 = max_fitness(g3, g4)
+        g3 = self.genomes[randint(0, self.population_size-1)]
+        g4 = self.genomes[randint(0, self.population_size-1)]
+        parent2 = self.max_fitness(g3, g4)
 
         parents.append(parent1)
         parents.append(parent2)
@@ -144,10 +152,12 @@ class GeneAlg(object):
         
     def parent_selection2(self):
         # get the top two performers
-        first = INFINITY
-        second = INFINITY
+        first = 0
+        second = 0
+        best_so_far = INFINITY
         for i in range(0, self.population_size):
-            if(self.genomes[i].fitness < first):
+            if(self.genomes[i].fitness < best_so_far):
+                best_so_far = self.genomes[i].fitness
                 second = first
                 first = i
 
@@ -162,7 +172,7 @@ class GeneAlg(object):
     # Given a vertex, check to see if any of the 
     # adjacent verticies have the same color
     def has_adjacent_color(self, vertex, coloring):
-        neighbors = self.graph.neighbor_of(vertex)
+        neighbors = self.graph.neighbors_of(vertex)
         for v in range(0, len(neighbors)):
             if(coloring[vertex] == coloring[neighbors[v].target]):
                 return True
@@ -172,11 +182,11 @@ class GeneAlg(object):
     # of adjacent verticies
     def adjacent_colors(self, vertex, coloring):
         colors = list()
-        neighbors = self.graph.neighbor_of(vertex)
+        neighbors = self.graph.neighbors_of(vertex)
 
         for v in range(0, len(neighbors)):
             if(v != vertex):
-                colors.append(coloring[neighbors[v].target)
+                colors.append(coloring[neighbors[v].target])
         return colors
 
     def mutation1(self, genome):
@@ -194,15 +204,15 @@ class GeneAlg(object):
         for vertex in range(0, len(coloring)):
             # if the vertex color has the same color as 
             # adjacent verticies
-            if(has_adjacent_color(vertex, coloring)):
-                adj_colors = adjacent_colors(vertex, coloring)
-            # select a random color that is not an adjacent color
-            color = randint(0, self.gene_length-1)
-            while(color not in adjacent_colors):
+            if(self.has_adjacent_color(vertex, coloring)):
+                adj_colors = self.adjacent_colors(vertex, coloring)
+                # select a random color that is not an adjacent color
                 color = randint(0, self.gene_length-1)
+                while(color not in adj_colors):
+                    color = randint(0, self.gene_length-1)
 
-            # update color 
-            new_coloring[vertex] = color
+                # update color 
+                new_coloring[vertex] = color
         g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
         return g
 
@@ -221,7 +231,7 @@ class GeneAlg(object):
         for vertex in range(0, len(coloring)):
             # if vertex color has the same color as
             # adjacent colors
-            if(has_adjacent_color(vertex, coloring)):
+            if(self.has_adjacent_color(vertex, coloring)):
                 # pick a random color and update
                 color = randint(0, self.gene_length-1)
                 new_coloring[vertex] = color
@@ -237,7 +247,7 @@ class GeneAlg(object):
         crosspoint = randint(0, self.chromosome_length-1)
         chromosome = list()
 
-        for v in range(0, chromosome_length):
+        for v in range(0, self.chromosome_length):
             if(v <= crosspoint):
                 chromosome.append(parent1.coloring[v])
             else:

@@ -151,18 +151,18 @@ class Graph(object):
         colors = len(graph.vertices()) 
         #colors = 2
 
-        genenetic = GeneAlg(graph, population_size, crossover_rate, mutation_rate, colors, max_epochs)
-        coloring = genenetic.run()
-        genomes = genenetic.genomes
+        genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
+        genetic.run()
+        while(genetic.started() and genetic.generations() < max_epochs):
+            genetic.epoch()
+            print("Generation " + str(genetic.generations()))
 
-        #for g in range(0, len(genomes)):
-            #print(genomes[g].to_string())
-        print("FITTESTSCORE:::"+str(genenetic.fittest_score))
-        return coloring
+        #return coloring
+        print(genetic.chromosome() + "  Generation: " + str(genetic.generations()))
 
 
 
-g = Graph.random_graph(800, .7)
+g = Graph.random_graph(50, .7)
 print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
@@ -172,7 +172,6 @@ print(g.to_string())
 #print('Welsh Powell Solution: \n', coloring1)
 #print(g.vertices)
 colroing = Graph.genetic_algorithm(g)
-print("final:::" + colroing.to_string())
 
 
 
