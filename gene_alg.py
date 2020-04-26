@@ -20,7 +20,7 @@ class Genome(object):
         return g
 
 class GeneAlg(object):
-    def __init__(cross, mut, pop, bits, gene):
+    def __init__(cross, mut, pop, bits, gene, graph):
         seed()
         self.crossover_rate = cross
         self.mutation_rate = mut
@@ -32,6 +32,7 @@ class GeneAlg(object):
         self.fittest_genome = 0
         self.best_fitness_score = INFINITY
         self.genomes = list()
+        self.graph = graph
 
         self.create_start_population()
 
@@ -84,15 +85,37 @@ class GeneAlg(object):
         self.busy = True
 
     def epoch(self):
+        # constant defined in paper
+        SELECTION_MUTTION_THRESHOLD = 4
         next_gen = list()
         self.update_fitness_score()
         noobs = 0
 
+        # The paper discusses keeping the population size constant
+        # but the psuedo-code does not mention how. So I think I 
+        # can either create 2 children to replace the parents. Or
+        # I can take the child and the fittest of the 2 parents
+        # into the next generation. I will do the latter.
+
         while(noobs < self.population_size):
-            #get parents
-            #crossover
-            #mutate
-            noobs += 1
+            if(self.best_fitness_score > SELECTION_MUTTION_THRESHOLD):
+                parents = self.parent_selection1()
+                child = self.crossover(parents[0], parents[1])
+                child = self.mutation1(child)
+                next_gen.append(child)
+
+                parent = max_fitness(parents[0], parents[1])
+                next_gen.append(parent)
+            else:
+                parents = self.parent_selection2()
+                child = self.crossover(parents[0], parents[1])
+                child = self.mutation2(child)
+                next_gen.append(child)
+
+                parent = max_fitness(parents[0], parents[1])
+                next_gen.append(parent)
+
+            noobs += 2
         self.genomes = next_gen
         self.generation += 1
 
