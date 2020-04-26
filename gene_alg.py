@@ -157,10 +157,13 @@ class GeneAlg(object):
         return colors
 
     def mutation1(self, genome):
+        if(random() > self.mutation_rate):
+            return genome
+
         coloring = genome.coloring
         new_coloring = list()
 
-        # make a copy of the chromosome
+        # make a deep copy of the chromosome
         for i in range(0, len(coloring)):
             new_coloring.append(coloring[i])
 
@@ -180,8 +183,41 @@ class GeneAlg(object):
         g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
         return g
 
+    def mutation2(self, genome):
+        if(random() > self.mutation_rate):
+            return genome
+
+        coloring = genome.coloring
+        new_coloring = list()
+
+        # make a deep copy of the chromosome
+        for i in range(0, len(coloring)):
+            new_coloring.append(coloring[i])
+
+        # for each vertex in the chromosome
+        for vertex in range(0, len(coloring)):
+            # if vertex color has the same color as
+            # adjacent colors
+            if(has_adjacent_color(vertex, coloring)):
+                # pick a random color and update
+                color = randint(0, self.gene_length-1)
+                new_coloring[vertex] = color
+
+        g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
+        return g
 
 
+    def crossover(self, parent1, parent2):
+        if(random() > self.crossover_rate):
+            return parent1
 
-    def mutation2(self):
-    def crossover(self):
+        crosspoint = randint(0, self.chromosome_length-1)
+        chromosome = list()
+
+        for v in range(0, chromosome_length):
+            if(v <= crosspoint):
+                chromosome.append(parent1.coloring[v])
+            else:
+                chromosome.append(parent2.coloring[v])
+        child = Genome.from_chromosome(self.chromosome_length, self.gene_length, chromosome)
+        return child
