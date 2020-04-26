@@ -4,7 +4,6 @@ from gene_alg import GeneAlg
 import operator
 
 # implementation of an undirected graph using Adjacency Lists
-
 class EdgeNode(object):
     def __init__(self, source, target):
        self.source = source
@@ -149,20 +148,15 @@ class Graph(object):
 
         #worst case, every vertex needs a color
         colors = len(graph.vertices()) 
-        #colors = 2
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
         while(genetic.started() and genetic.generations() < max_epochs):
             genetic.epoch()
-            print("Generation " + str(genetic.generations()))
-
-        #return coloring
         print(genetic.chromosome() + "  Generation: " + str(genetic.generations()))
 
 
-
-g = Graph.random_graph(50, .7)
+g = Graph.random_graph(6, .3)
 print(g.to_string())
 #g.print_graph()
 #coloring = Graph.greedy_coloring(g)
