@@ -11,7 +11,7 @@ class EdgeNode(object):
        self.target = target
 
     def to_string(self):
-        return " " + str(target)
+        return " " + str(self.target)
 
 class VertexNode(object):
     def __init__(self, v):
@@ -241,8 +241,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
 
 #class Vertex:
 #    def __init__(self, n):
