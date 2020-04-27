@@ -116,27 +116,32 @@ class Graph(object):
     def genetic_algorithm(graph):
         Graph.graph_info(graph)
         #parameters from paper
-        mutation_rate = 1.0
+        mutation_rate = 0.7
         crossover_rate = 1.0
         population_size = 50
         # the paper has this set to 20,000 but without further
         # optimization, it takes too long to execute
-        max_epochs = 2000
+        max_epochs = 20000
 
         #worst case, every vertex needs a color
-        colors = len(graph.vertices()) 
+        colors = len(graph.vertices())
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
+        counter = 0
         while(genetic.started() and genetic.generations() < max_epochs):
             genetic.epoch()
+            counter += 1
+            if(counter == 100):
+                print("Generation: " + str(genetic.generations()))
+                counter = 0
 
         if(genetic.generations() >= max_epochs):
             print("Failed to Converge. Seeking wisdom of the crowds")
             coloring = genetic.wisdom_of_artificial_crowds()
-            return coloring
+            return genetic.n_colors_used(), coloring
         else:
-            return genetic.coloring()
+            return genetic.n_colors_used(), genetic.coloring()
 
     @staticmethod
     def welsh_powell(graph):
@@ -243,7 +248,7 @@ def main():
     #coloring1 = Graph.welsh_powell(g)
     #print('Welsh Powell Solution: \n', coloring1)
     #cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
-    print(Graph.genetic_algorithm(Graph.random_graph(65, .2)))
+    print(Graph.genetic_algorithm(Graph.random_graph(10, .4)))
 
 
 if __name__ == '__main__':

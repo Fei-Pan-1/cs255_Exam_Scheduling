@@ -44,7 +44,7 @@ class GeneAlg(object):
         # once for updating the fitness and once for picking a random color.
         # To advoid this, I created this buffer and reuse it for the duration
         # of the program.
-        self.colors_buffer = [None] * gene
+        self.colors_buffer = [None] * gene*bits
         
         # Used to get intersection of colors
         self.all_colors = set(i for i in range(0, gene))
@@ -65,6 +65,15 @@ class GeneAlg(object):
             coloring_map[vertex] = chromosome[vertex]
 
         return coloring_map
+
+    def n_colors_used(self):
+        chromosome = self.genomes[self.fittest_genome].coloring
+        color_set = set()
+
+        for vertex in range(0, len(chromosome)):
+            color_set.add(chromosome[vertex])
+        return len(color_set)
+
 
     def chromosome(self):
         genome = self.genomes[self.fittest_genome]
@@ -99,7 +108,6 @@ class GeneAlg(object):
             if(self.genomes[i].fitness < self.best_fitness_score):
                 self.best_fitness_score = self.genomes[i].fitness
                 self.fittest_genome = i
-#                print("Fittest Changed: " +str(i) + ":::" + str(self.genomes[i].fitness))
 
             if(self.genomes[i].fitness == 0):
                 self.busy = False
@@ -219,8 +227,10 @@ class GeneAlg(object):
         neighbors = self.graph.neighbors_of(vertex)
         n_edges = len(neighbors)
 
+        counter = 0
         for v in range(0, n_edges):
-            self.colors_buffer[v] = coloring[neighbors[v].target]
+            self.colors_buffer[counter] = coloring[neighbors[v].target]
+            counter += 1
         return n_edges
 
     def available_colors(self, adj_color_index):
@@ -228,7 +238,7 @@ class GeneAlg(object):
             for i in range(0, adj_color_index):
                 coloring[i] = self.colors_buffer[i]
 
-            colors = self.all_colors.intersection(coloring)
+            colors = self.all_colors.difference(coloring)
 
             #colors = [value for value in self.colors_buffer if value in self.all_colors] 
             return list(colors)
@@ -248,8 +258,12 @@ class GeneAlg(object):
                 colors_intersection = self.available_colors(n_adj_colors)
 
                 # select a random color that is not an adjacent color
-                color = randint(0, self.gene_length-self.chromosome_length)
-                coloring[vertex] = colors_intersection[color]
+                color_index = randint(0, len(colors_intersection))
+                if(len(colors_intersection) > 0 and color_index == len(colors_intersection)):
+                    color_index -= 1
+                if(len(colors_intersection) == 0):
+                    color_index = 0
+                coloring[vertex] = colors_intersection[color_index]
         return coloring
 
 
@@ -323,4 +337,16 @@ class GeneAlg(object):
                 # vertex is part of a bad edge, get consensus, and assign
                 color = self.form_consensus(v, experts)
                 coloring[v] = color
-        return coloring
+
+        chromosome = coloring
+
+        coloring_map = {}
+        for vertex in range(0, len(chromosome)):
+            coloring_map[vertex] = chromosome[vertex]
+
+        chromosome = self.genomes[self.fittest_genome].coloring
+        color_set = set()
+
+        for vertex in range(0, len(chromosome)):
+            color_set.add(chromosome[vertex])
+        return len(color_set), coloring
