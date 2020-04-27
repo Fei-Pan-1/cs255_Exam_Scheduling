@@ -5,17 +5,20 @@ from random import random
 INFINITY = float("inf")
 
 class Genome(object):
-    def __init__(self, n_vertices, n_colors):
+    def __init__(self, n_vertices, n_colors, random=True):
         self.fitness = INFINITY
-        self.coloring = list()
+        self.coloring = [None] * n_vertices
 
-        for i in range(0, n_vertices):
-            self.coloring.append(randint(0, n_colors))
+        if(random):
+            for i in range(0, n_vertices):
+                self.coloring[i] = randint(0, n_colors)
 
     @staticmethod
     def from_chromosome(n_vertices, n_colors, chromosome):
-        g = Genome(n_vertices, n_colors)
-        g.coloring = chromosome
+        g = Genome(n_vertices, n_colors, False)
+        # make a deep copy
+        for i in range(0, len(chromosome)):
+            g.coloring[i] = chromosome[i]
         return g
 
 class GeneAlg(object):
@@ -23,14 +26,28 @@ class GeneAlg(object):
         self.crossover_rate = cross
         self.mutation_rate = mut
         self.population_size = pop
+        # chromosome is list representation of the graph color assignments
         self.chromosome_length = bits
+        # gene is max range of colors allowed to be used starting from 0
         self.gene_length = gene
         self.generation = 0
         self.busy = False
         self.fittest_genome = 0
         self.best_fitness_score = INFINITY
-        self.genomes = list()
+        self.genomes = [None] * pop
         self.graph = graph
+
+        # adjacent_colors() became a bottleneck due to appending to a list
+        # for every vertex. I assume because list() is implemented with an
+        # array, then the array must be allocated when we over step the 
+        # capacity. This function is called for every vertex for every genome
+        # once for updating the fitness and once for picking a random color.
+        # To advoid this, I created this buffer and reuse it for the duration
+        # of the program.
+        self.colors_buffer = [None] * gene
+        
+        # Used to get intersection of colors
+        self.all_colors = set(i for i in range(0, gene))
 
         self.create_start_population()
 
@@ -59,9 +76,9 @@ class GeneAlg(object):
     def calculate_fitness(self, chromosome):
         bad_edges = 0
         for vertex in range(0, len(chromosome)):
-            adj_colors = self.adjacent_colors(vertex, chromosome)
-            for color in range(0, len(adj_colors)):
-                if(chromosome[vertex] == adj_colors[color]):
+            n_adj_colors = self.adjacent_colors(vertex, chromosome)
+            for color in range(0, n_adj_colors):
+                if(chromosome[vertex] == self.colors_buffer[color]):
                     bad_edges += 1
         return bad_edges
 
@@ -76,14 +93,14 @@ class GeneAlg(object):
             if(self.genomes[i].fitness < self.best_fitness_score):
                 self.best_fitness_score = self.genomes[i].fitness
                 self.fittest_genome = i
+#                print("Fittest Changed: " +str(i) + ":::" + str(self.genomes[i].fitness))
 
             if(self.genomes[i].fitness == 0):
                 self.busy = False
             
     def create_start_population(self):
-        self.genomes.clear()      
         for i in range(0, self.population_size):
-            self.genomes.append(Genome(self.chromosome_length, self.gene_length))
+            self.genomes[i] = Genome(self.chromosome_length, self.gene_length)
         
         self.generation = 0
         self.fittest_genome = 0
@@ -96,7 +113,7 @@ class GeneAlg(object):
     def epoch(self):
         # constant defined in paper
         SELECTION_MUTTION_THRESHOLD = 4
-        next_gen = list()
+        next_gen = [None] * self.population_size
         self.update_fitness_score()
         noobs = 0
 
@@ -106,23 +123,30 @@ class GeneAlg(object):
         # I can take the child and the fittest of the 2 parents
         # into the next generation. I will do the latter.
 
+        counter = 0
+        chromosome = [None] * self.chromosome_length
         while(noobs < self.population_size):
             if(self.best_fitness_score > SELECTION_MUTTION_THRESHOLD):
                 parents = self.parent_selection1()
-                child = self.crossover(parents[0], parents[1])
-                child = self.mutation1(child)
-                next_gen.append(child)
+                crossed_chromosome = self.crossover(parents[0], parents[1], chromosome)
+                mutated_chromosome = self.mutation1(crossed_chromosome)
+                next_gen[counter] = Genome.from_chromosome(self.chromosome_length, self.gene_length, mutated_chromosome) 
+                counter += 1
 
                 parent = self.max_fitness(parents[0], parents[1])
-                next_gen.append(parent)
+                next_gen[counter] = parent
+                counter += 1
+            
             else:
                 parents = self.parent_selection2()
-                child = self.crossover(parents[0], parents[1])
-                child = self.mutation2(child)
-                next_gen.append(child)
+                crossed_chromosome = self.crossover(parents[0], parents[1], chromosome)
+                mutated_chromosome = self.mutation2(crossed_chromosome)
+                next_gen[counter] = Genome.from_chromosome(self.chromosome_length, self.gene_length, mutated_chromosome) 
+                counter += 1
 
                 parent = self.max_fitness(parents[0], parents[1])
-                next_gen.append(parent)
+                next_gen[counter] = parent
+                counter += 1
 
             noobs += 2
         self.genomes = next_gen
@@ -180,81 +204,81 @@ class GeneAlg(object):
         return False
 
     # Given a vertex, return a list of all colors
-    # of adjacent verticies
+    # of adjacent verticies. As an optimization, we use color_buffer
+    # and return the lenght of the buffer that we have used. This works
+    # since I only care if a color occurs once. Using the buffer allows
+    # me to avoid many many allocations.
+
     def adjacent_colors(self, vertex, coloring):
-        colors = list()
         neighbors = self.graph.neighbors_of(vertex)
+        n_edges = len(neighbors)
 
-        for v in range(0, len(neighbors)):
-            if(v != vertex):
-                colors.append(coloring[neighbors[v].target])
-        return colors
+        for v in range(0, n_edges):
+            self.colors_buffer[v] = coloring[neighbors[v].target]
+        return n_edges
 
-    def mutation1(self, genome):
+    def available_colors(self, adj_color_index):
+            coloring = [None] * adj_color_index
+            for i in range(0, adj_color_index):
+                coloring[i] = self.colors_buffer[i]
+
+            colors = self.all_colors.intersection(coloring)
+
+            #colors = [value for value in self.colors_buffer if value in self.all_colors] 
+            return list(colors)
+
+    def mutation1(self, chromosome):
         if(random() > self.mutation_rate):
-            return genome
+            return chromosome
 
-        coloring = genome.coloring
-        new_coloring = list()
-
-        # make a deep copy of the chromosome
-        for i in range(0, len(coloring)):
-            new_coloring.append(coloring[i])
+        coloring = chromosome
 
         # for each vertex in the chromosome
-        for vertex in range(0, len(coloring)):
+        for vertex in range(0, self.chromosome_length):
             # if the vertex color has the same color as 
             # adjacent verticies
             if(self.has_adjacent_color(vertex, coloring)):
-                adj_colors = self.adjacent_colors(vertex, coloring)
+                n_adj_colors = self.adjacent_colors(vertex, coloring)
+                colors_intersection = self.available_colors(n_adj_colors)
+
                 # select a random color that is not an adjacent color
-                color = randint(0, self.gene_length-1)
-                while(color not in adj_colors):
-                    color = randint(0, self.gene_length-1)
+                color = randint(0, self.gene_length-self.chromosome_length)
+                coloring[vertex] = colors_intersection[color]
+        return coloring
 
-                # update color 
-                new_coloring[vertex] = color
-        g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
-        return g
 
-    def mutation2(self, genome):
+
+    def mutation2(self, chromosome):
         if(random() > self.mutation_rate):
-            return genome
+            return chromosome
 
-        coloring = genome.coloring
-        new_coloring = list()
-
-        # make a deep copy of the chromosome
-        for i in range(0, len(coloring)):
-            new_coloring.append(coloring[i])
+        coloring = chromosome
 
         # for each vertex in the chromosome
-        for vertex in range(0, len(coloring)):
+        for vertex in range(0, self.chromosome_length):
             # if vertex color has the same color as
             # adjacent colors
             if(self.has_adjacent_color(vertex, coloring)):
                 # pick a random color and update
                 color = randint(0, self.gene_length-1)
-                new_coloring[vertex] = color
+                coloring[vertex] = color
 
-        g = Genome.from_chromosome(self.chromosome_length, self.gene_length, new_coloring)
-        return g
+        return coloring
 
 
-    def crossover(self, parent1, parent2):
+    def crossover(self, parent1, parent2, chromosome):
         if(random() > self.crossover_rate):
             return parent1
 
         crosspoint = randint(0, self.chromosome_length-1)
-        chromosome = list()
 
         for v in range(0, self.chromosome_length):
             if(v <= crosspoint):
-                chromosome.append(parent1.coloring[v])
+                chromosome[v] = parent1.coloring[v]
             else:
-                chromosome.append(parent2.coloring[v])
-        child = Genome.from_chromosome(self.chromosome_length, self.gene_length, chromosome)
-        return child
+                chromosome[v] = parent2.coloring[v]
+        #child = Genome.from_chromosome(self.chromosome_length, self.gene_length, chromosome)
+        return chromosome
 
     def form_consensus(self, vertex, population):
         counts = {}

@@ -2,6 +2,7 @@ from random import seed
 from random import random
 from random import randint
 from gene_alg import GeneAlg
+import cProfile
 import operator
 
 # implementation of an undirected graph using Adjacency Lists
@@ -113,6 +114,7 @@ class Graph(object):
 
     @staticmethod
     def genetic_algorithm(graph):
+        Graph.graph_info(graph)
         #parameters from paper
         mutation_rate = 1.0
         crossover_rate = 1.0
@@ -124,8 +126,10 @@ class Graph(object):
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
-        while(genetic.started() and genetic.generations() < max_epochs):
+        #while(genetic.started() and genetic.generations() < max_epochs):
+        while(genetic.generations() < max_epochs):
             genetic.epoch()
+            print("Generation: " + str(genetic.generations()))
 
         if(genetic.generations() >= max_epochs):
             print("Failed to Converge. Seeking wisdom of the crowds")
@@ -229,7 +233,8 @@ def random_tests():
 
 def main():
     seed()
-    random_tests()
+    #random_tests()
+
     #g = Graph.random_graph(20, .7)
     #print('Graph:\n', g.to_string())
     #coloring = Graph.greedy_coloring(g)
@@ -237,7 +242,7 @@ def main():
     #print(str(len(g.vertices)))
     #coloring1 = Graph.welsh_powell(g)
     #print('Welsh Powell Solution: \n', coloring1)
-    #Graph.genetic_algorithm(g)
+    cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
 
 if __name__ == '__main__':
     main()
