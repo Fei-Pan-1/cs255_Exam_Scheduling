@@ -46,20 +46,18 @@ print('Welsh Powell Solution for Exams: \n', coloring1, '\n', max(coloring1.valu
 
 # welsh powell solution from dictionary to Dataframe
 df_solution = pd.DataFrame(coloring1.items(), columns=['eid', 'tid'])
-df_solution = df_solution.sort_values('eid').reset_index(drop=True)
+# df_solution = df_solution.sort_values('eid').reset_index(drop=True)
 print(df_solution)
-df_solution.to_csv('dataset/processed_data/solution.csv', index=False)
+df_solution.to_csv('dataset/results/solution.csv', index=False)
 
 
-
-#
-# wrong_color = 0
-# for e in edges:
-#     u, v = e
-#     # print(coloring1[u], coloring1[v])
-#     if coloring1[u] == coloring1[v]:
-#         wrong_color += 1
-# print(wrong_color, 'wrong_color')
+wrong_color = 0
+for e in edges:
+    u, v = e
+    # print(coloring1[u], coloring1[v])
+    if coloring1[u] == coloring1[v]:
+        wrong_color += 1
+print(wrong_color, 'wrong_color')
 
 
 

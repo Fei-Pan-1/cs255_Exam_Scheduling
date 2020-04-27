@@ -4,24 +4,32 @@ import pandas as pd
 # print out time table
 df_exams = pd.read_csv('dataset/processed_data/exams.csv')
 df_timeslots = pd.read_csv('dataset/processed_data/timeslots.csv')
-df_solution = pd.read_csv('dataset/processed_data/solution.csv')
+df_solution = pd.read_csv('dataset/results/solution.csv')
 
-# assign room for each exam. Exams at same time slot should be in different rooms
-# df_solution = df_solution.sort_values('tid').reset_index(drop=True)
-# room_col = []
-# room_col.append(0)
-# for index, row in df_solution.iterrows():
-#     room = 0
-#     prev_row['tid']
-#     if index = 0:
-#     print(index, row['eid'], row['tid'])
-# print(df_exams)
+# assign rooms for each exam. Exams at same time slot should be in different rooms
+df_solution = df_solution.sort_values('tid').reset_index(drop=True)
+nextRoom = {}
+assigned_room = []
+for index, row in df_solution.iterrows():
+    print(index, row['eid'], row['tid'])
+    roomNo = nextRoom.get(row['tid'], 0)
+    assigned_room.append(roomNo)
+    nextRoom[row['tid']] = roomNo + 1
+print(assigned_room)
 
-# print(df_solution)
+df_solution['rid'] = assigned_room
+print(df_solution)
+df_solution.to_csv('dataset/results/solution.csv', index=False)
+
 df_timetable_draft = pd.merge(df_exams, df_solution, on='eid')
-# print(df_timetable_draft)
+print(df_timetable_draft)
 df_timetable = pd.merge(df_timetable_draft, df_timeslots, on='tid')
 df_timetable = df_timetable.sort_values('eid').reset_index(drop=True)
-df_timetable = df_timetable.drop(columns=['duration','department_code'], axis=1)
+df_timetable = df_timetable.drop(columns=['duration'], axis=1)
+# rename the columns
+df_timetable.columns = ['eid','exam','description','department_code','tid','rid','start_time','end_time','date']
+# reorder the columns
+df_timetable = df_timetable[['eid','exam','description','department_code','tid','start_time','end_time','date','rid']]
 print(df_timetable)
-df_timetable.to_csv('dataset/processed_data/timetable.csv', index=False)
+
+df_timetable.to_csv('dataset/results/timetable.csv', index=False)
