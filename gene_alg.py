@@ -58,7 +58,13 @@ class GeneAlg(object):
         return self.fittest_genome
 
     def coloring(self):
-        return self.genomes[self.fittest_genome].coloring
+        chromosome = self.genomes[self.fittest_genome].coloring
+
+        coloring_map = {}
+        for vertex in range(0, len(chromosome)):
+            coloring_map[vertex] = chromosome[vertex]
+
+        return coloring_map
 
     def chromosome(self):
         genome = self.genomes[self.fittest_genome]
