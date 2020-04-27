@@ -19,17 +19,17 @@ print(assigned_room)
 
 df_solution['rid'] = assigned_room
 print(df_solution)
-df_solution.to_csv('dataset/results/solution.csv', index=False)
+# df_solution.to_csv('dataset/results/solution.csv', index=False)
 
 df_timetable_draft = pd.merge(df_exams, df_solution, on='eid')
 print(df_timetable_draft)
 df_timetable = pd.merge(df_timetable_draft, df_timeslots, on='tid')
 df_timetable = df_timetable.sort_values('eid').reset_index(drop=True)
-df_timetable = df_timetable.drop(columns=['duration'], axis=1)
+df_timetable = df_timetable.drop(columns=['duration','tid'], axis=1)
 # rename the columns
-df_timetable.columns = ['eid','exam','description','department_code','tid','rid','start_time','end_time','date']
+df_timetable.columns = ['Exam Id','Exam Name','Description','Department','Room','Start Time','End Time','Date']
 # reorder the columns
-df_timetable = df_timetable[['eid','exam','description','department_code','tid','start_time','end_time','date','rid']]
+df_timetable = df_timetable[['Exam Id','Exam Name','Description','Department','Start Time','End Time','Date','Room']]
 print(df_timetable)
 
 df_timetable.to_csv('dataset/results/timetable.csv', index=False)
