@@ -2,10 +2,11 @@ from itertools import combinations
 import pandas as pd
 from graph import Graph
 
-# put each student and his exams in a dictionary.
+# Put each student and his exams in a dictionary.
+# Student id is the key and a set of all exams of each student is the value.
 df = pd.read_csv('dataset/processed_data/enrolments_with_id.csv')
 df = df.drop(['student','exam'], axis=1)
-print(df)
+# print(df)
 dmap = {}
 for row in df.values:
     dmap.setdefault(row[0], set()).add(row[1])
@@ -46,11 +47,10 @@ print('Welsh Powell Solution for Exams: \n', coloring1, '\n', max(coloring1.valu
 used, genetic_coloring = Graph.genetic_algorithm(graph)
 print('Genetic Algorithm Solution for Exams: \n',genetic_coloring, '\n', used, ' colors used.')
 
-# welsh powell solution from dictionary to Dataframe
+# Save welsh powell solution from dictionary to Dataframe
 df_solution = pd.DataFrame(coloring1.items(), columns=['eid', 'tid'])
-# df_solution = df_solution.sort_values('eid').reset_index(drop=True)
-print(df_solution)
-df_solution.to_csv('dataset/results/solution.csv', index=False)
+df_solution = df_solution.sort_values('eid').reset_index(drop=True)
+# df_solution.to_csv('dataset/results/solution.csv', index=False)
 
 
 wrong_color = 0
@@ -59,8 +59,4 @@ for e in edges:
     # print(coloring1[u], coloring1[v])
     if coloring1[u] == coloring1[v]:
         wrong_color += 1
-print(wrong_color, 'wrong_color')
-
-
-
-
+print(wrong_color, 'wrong_color found for Welsh Powell solution')
