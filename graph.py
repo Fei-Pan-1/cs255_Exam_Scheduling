@@ -88,22 +88,22 @@ class Graph(object):
     @staticmethod
     def greedy_coloring(graph):
         coloring = {}
-        color = 0
 
         for v in graph.vertices():
+            color = 0
+            # insert into the map
+            coloring[v.vertex] = -1
             # the case where the graph is disconnected and v
             # has no neighbors
-            if len(v.neighbors()) <= 0:
+            if(len(v.neighbors()) <= 0):
                 coloring[v.vertex] = color
 
             for neighbor in v.neighbors():
-                if neighbor.target in coloring and coloring[neighbor.target] == color:
+                while(neighbor.target in coloring and coloring[neighbor.target] == color):
                     # this is an adjacent node with same color
-                    # use next color
+                    # try to use next color
                     color += 1
-                    coloring[v.vertex] = color
-                else:
-                    coloring[v.vertex] = color
+                coloring[v.vertex] = color
         return coloring
 
     @staticmethod
@@ -240,15 +240,15 @@ def main():
     seed()
     #random_tests()
 
-    #g = Graph.random_graph(20, .7)
-    #print('Graph:\n', g.to_string())
-    #coloring = Graph.greedy_coloring(g)
-    #print('Greedy Solution: \n',coloring)
+    g = Graph.random_graph(5, .1)
+    print('Graph:\n', g.to_string())
+    coloring = Graph.greedy_coloring(g)
+    print('Greedy Solution: \n',coloring)
     #print(str(len(g.vertices)))
     #coloring1 = Graph.welsh_powell(g)
     #print('Welsh Powell Solution: \n', coloring1)
     #cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
-    print(Graph.genetic_algorithm(Graph.random_graph(10, .4)))
+    #print(Graph.greedy_coloring(Graph.random_graph(5, .4)))
 
 
 if __name__ == '__main__':
