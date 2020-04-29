@@ -115,20 +115,20 @@ class Graph(object):
 
 
 
+# between 38 and 40 colors works good with exam graph
     @staticmethod
-    def genetic_algorithm(graph):
+    def genetic_algorithm(graph, colors):
         Graph.graph_info(graph)
         #parameters from paper
-        mutation_rate = 0.7
+        mutation_rate = 0.8
         crossover_rate = 1.0
         population_size = 50
         # the paper has this set to 20,000 but without further
         # optimization, it takes too long to execute
-        max_epochs = 2000
+        max_epochs = 20000
 
         #worst case, every vertex needs a color
-        #colors = len(graph.vertices())
-        colors = 10
+        #colors = 38
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
@@ -145,7 +145,9 @@ class Graph(object):
             coloring = genetic.wisdom_of_artificial_crowds()
             return genetic.n_colors_used(), coloring
         else:
+            print(genetic.generations())
             return genetic.n_colors_used(), genetic.coloring()
+            
 
     @staticmethod
     def welsh_powell(graph):
@@ -236,7 +238,7 @@ def random_tests():
         if(Graph.is_valid_solution(wp_coloring, g)):
             correct_solutions[WP] += 1
 
-        genetic_coloring = Graph.genetic_algorithm(g)
+        genetic_coloring = Graph.genetic_algorithm(g, 38)
         if(Graph.is_valid_solution(genetic_coloring, g)):
             correct_solutions[GENETIC] += 1
 
@@ -260,6 +262,8 @@ def main():
     print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
     #cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
     #print(Graph.greedy_coloring(Graph.random_graph(5, .4)))
+    #n, coloring_genetic = Graph.genetic_algorithm(g, 85)
+    #print('Genetic Algorithm Solution: \n', coloring_genetic, '\n', n)
 
     # Experiment on 3 Bipartite Graphs
     bipartite1 = Graph(8)

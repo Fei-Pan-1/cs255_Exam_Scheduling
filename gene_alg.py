@@ -11,7 +11,7 @@ class Genome(object):
 
         if(random):
             for i in range(0, n_vertices):
-                self.coloring[i] = randint(0, n_colors)
+                self.coloring[i] = randint(1, n_colors) -1
 
     @staticmethod
     def from_chromosome(n_vertices, n_colors, chromosome):
@@ -44,9 +44,7 @@ class GeneAlg(object):
         # once for updating the fitness and once for picking a random color.
         # To advoid this, I created this buffer and reuse it for the duration
         # of the program.
-        #self.colors_buffer = [None] * gene*bits
-        self.colors_buffer = [None] * bits * 2
-        self.used_colors = [False] * graph.n_verticies
+        self.used_colors = [False] * gene
         
         # Used to get intersection of colors
         self.all_colors = set(i for i in range(0, gene))
@@ -90,17 +88,10 @@ class GeneAlg(object):
     def stop(self):
         self.busy = False
 
-#    def calculate_fitness(self, chromosome):
-#        bad_edges = 0
-#        for vertex in range(0, len(chromosome)):
-#            self.reset_used_colors()
-#            self.adjacent_colors(vertex, chromosome)
-#            for color in range(0, len(self.used_colors)):
-#                if(chromosome[vertex] == self.colors_buffer[color]):
-#                    bad_edges += 1
-#        return bad_edges
-
     def calculate_fitness(self, chromosome):
+        n_colors_used = set()
+        for i in range(0, len(chromosome)):
+            n_colors_used.add(i)
         return self.graph.count_bad_edges(chromosome)
 
     def update_fitness_score(self):
@@ -171,6 +162,7 @@ class GeneAlg(object):
             noobs += 2
         self.genomes = next_gen
         self.generation += 1
+        print(self.best_fitness_score)
 
     def max_fitness(self, g1, g2):
         if(g1.fitness < g2.fitness):
@@ -218,43 +210,31 @@ class GeneAlg(object):
     # adjacent verticies have the same color
     def has_adjacent_color(self, vertex, coloring):
         neighbors = self.graph.neighbors_of(vertex)
-        for v in range(0, len(neighbors)):
-            if(coloring[vertex] == coloring[neighbors[v].target]):
+        for edge in neighbors:
+            if(coloring[edge.source] == coloring[edge.target]):
                 return True
         return False
 
     # Given a vertex, return a list of all colors
-    # of adjacent verticies. As an optimization, we use color_buffer
-    # and return the lenght of the buffer that we have used. This works
-    # since I only care if a color occurs once. Using the buffer allows
-    # me to avoid many many allocations.
-
-#    def adjacent_colors(self, vertex, coloring):
-#        neighbors = self.graph.neighbors_of(vertex)
-#        n_edges = len(neighbors)
-
-#        counter = 0
-#        for v in range(0, n_edges):
-#            self.colors_buffer[counter] = coloring[neighbors[v].target]
-#            counter += 1
-#        return n_edges
+    # of adjacent verticies.
 
     def adjacent_colors(self, vertex, coloring):
         neighbors = self.graph.neighbors_of(vertex)
-        for neighbor in neighbors:
-            self.used_colors[coloring[neighbor.target]] = True
+
+        for edge in neighbors:
+            if(coloring[edge.source] == coloring[edge.target]):
+                self.used_colors[coloring[edge.target]] = True
 
     def reset_used_colors(self):
         for i in range(0, len(self.used_colors)):
             self.used_colors[i] = False
 
     def available_colors(self):
-        diff = list()
-        for color in range(len(self.used_colors)):
+        diff = set()
+        for color in range(0, len(self.used_colors)):
             if(self.used_colors[color] == False):
-                diff.append(color)
-
-            return diff
+                diff.add(color)
+        return list(diff)
 
     def mutation1(self, chromosome):
         if(random() > self.mutation_rate):
@@ -268,8 +248,6 @@ class GeneAlg(object):
             # adjacent verticies
             if(self.has_adjacent_color(vertex, coloring)):
                 self.reset_used_colors()
-                #n_adj_colors = self.adjacent_colors(vertex, coloring)
-                #colors_intersection = self.available_colors(n_adj_colors)
                 self.adjacent_colors(vertex, coloring)
                 colors_intersection = self.available_colors()
 
@@ -281,11 +259,6 @@ class GeneAlg(object):
                     coloring[vertex] = colors_intersection[color_index]
                 else:
                     coloring[vertex] = 0
-#                if(len(colors_intersection) > 0 and color_index == len(colors_intersection)):
-#                    color_index -= 1
-#                if(len(colors_intersection) == 0):
-#                    color_index = 0
-#                coloring[vertex] = colors_intersection[color_index]
         return coloring
 
 
@@ -310,7 +283,7 @@ class GeneAlg(object):
 
     def crossover(self, parent1, parent2, chromosome):
         if(random() > self.crossover_rate):
-            return parent1
+            return parent1.coloring
 
         crosspoint = randint(0, self.chromosome_length-1)
 
@@ -371,4 +344,4 @@ class GeneAlg(object):
 
         for vertex in range(0, len(chromosome)):
             color_set.add(chromosome[vertex])
-        return len(color_set), coloring
+        return len(color_set), coloring_map
