@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {I. }Introduction}{1}% 
+\contentsline {section}{\numberline {II. }DEFINITION OF THE PROBLEM}{1}% 
+\contentsline {section}{\numberline {III. }MATHEMATICAL DEFINITION}{1}% 
+\contentsline {section}{\numberline {IV. }IMPLEMENTATION DETAILS}{1}% 
+\contentsline {section}{\numberline {V. }RELATED WORK}{1}% 
+\contentsline {section}{\numberline {VI. }DATA SETS USED}{1}% 
+\contentsline {section}{\numberline {VII. }ANALYSIS AND COMPARISON}{1}% 
+\contentsline {section}{\numberline {VIII. }EXPERIMENTAL RESULTS}{1}% 
+\contentsline {section}{\numberline {IX. }FURTHER DISCUSSION}{1}% 
+\contentsline {subsection}{\numberline {A.}Genetic Algorithm}{1}% 
+\contentsline {section}{\numberline {X. }CONCLUSION}{2}% 
+\contentsline {section}{References}{3}% 
