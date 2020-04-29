@@ -87,23 +87,26 @@ class Graph(object):
     
     @staticmethod
     def greedy_coloring(graph):
+        TAKEN = True
+        NOT_TAKEN = False
+
         coloring = {}
+        available_colors = [NOT_TAKEN] * graph.n_verticies
 
         for v in graph.vertices():
-            color = 0
-            # insert into the map
-            coloring[v.vertex] = -1
-            # the case where the graph is disconnected and v
-            # has no neighbors
-            if(len(v.neighbors()) <= 0):
-                coloring[v.vertex] = color
-
             for neighbor in v.neighbors():
-                while(neighbor.target in coloring and coloring[neighbor.target] == color):
+                if(neighbor.target in coloring):
                     # this is an adjacent node with same color
-                    # try to use next color
-                    color += 1
-                coloring[v.vertex] = color
+                    available_colors[coloring[neighbor.target]] = TAKEN
+            # assign the first available color
+            for color in range(0, len(available_colors)):
+                if(available_colors[color] == NOT_TAKEN):
+                    coloring[v.vertex] = color
+                    break
+
+            # reset available_colors
+            for color in range(0, len(available_colors)):
+                available_colors[color] = False
         return coloring
 
     @staticmethod
@@ -190,13 +193,12 @@ class Graph(object):
     
     @staticmethod
     def is_valid_solution(coloring, g):
-        for v in range(0, len(coloring)):
-            neighbors = g.neighbors_of(v)
-            for n in range(0, len(neighbors)):
-                if(coloring[v] == coloring[neighbors[n].target]):
+        wrong = 0
+        for v in g.vertices():
+            for edge in v.neighbors():
+                if(coloring[edge.source] == coloring[edge.target]):
                     return False
         return True
-            
 
 def random_tests():
     iterations = 10
