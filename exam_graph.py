@@ -16,7 +16,7 @@ df_exams = pd.read_csv('dataset/processed_data/exams.csv')
 n = len(df_exams.index)
 print(n, ' exams')
 
-# list all combinations of 2 in each set as edges.
+# List all combinations of 2 in each set as edges.
 edges = set()
 for key in dmap:
     exams_each_student = list(dmap[key])

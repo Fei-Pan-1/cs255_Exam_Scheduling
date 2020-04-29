@@ -251,9 +251,9 @@ def main():
     seed()
     #random_tests()
 
-    # Experiment on Random Graph
-    g = Graph.random_graph(800, .02)
-    print('Random Graph:\n', g.to_string())
+    # Experiment on Simple Random Graph
+    g = Graph.random_graph(5, .7)
+    print('Simple Random Graph:\n', g.to_string())
     Graph.graph_info(g)
     coloring = Graph.greedy_coloring(g)
     print('Greedy Solution: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
@@ -264,6 +264,16 @@ def main():
     #print(Graph.greedy_coloring(Graph.random_graph(5, .4)))
     #n, coloring_genetic = Graph.genetic_algorithm(g, 85)
     #print('Genetic Algorithm Solution: \n', coloring_genetic, '\n', n)
+
+    # Experiment on  Random Graph
+    g = Graph.random_graph(800, .02)
+    print('800 Vertices Random Graph:\n', g.to_string())
+    Graph.graph_info(g)
+    coloring = Graph.greedy_coloring(g)
+    print('Greedy Solution: \n', coloring, '\n', max(coloring.values()) + 1, ' colors used.')
+    # print(str(len(g.vertices)))
+    coloring1 = Graph.welsh_powell(g)
+    print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
 
     # Experiment on 3 Bipartite Graphs
     # Bipartite 1
