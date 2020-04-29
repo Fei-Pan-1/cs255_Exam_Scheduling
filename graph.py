@@ -132,13 +132,13 @@ class Graph(object):
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
-        counter = 0
+        #counter = 0
         while(genetic.started() and genetic.generations() < max_epochs):
             genetic.epoch()
-            counter += 1
-            if(counter == 100):
-                print("Generation: " + str(genetic.generations()))
-                counter = 0
+            #counter += 1
+            #if(counter == 100):
+                #print("Generation: " + str(genetic.generations()))
+                #counter = 0
 
         if(genetic.generations() >= max_epochs):
             print("Failed to Converge. Seeking wisdom of the crowds")

@@ -162,7 +162,6 @@ class GeneAlg(object):
             noobs += 2
         self.genomes = next_gen
         self.generation += 1
-        print(self.best_fitness_score)
 
     def max_fitness(self, g1, g2):
         if(g1.fitness < g2.fitness):

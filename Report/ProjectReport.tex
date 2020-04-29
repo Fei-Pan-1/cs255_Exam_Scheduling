@@ -98,17 +98,18 @@
 \renewcommand{\baselinestretch}{1.5}
 
 \section{Introduction}
-Graphs are useful data structures for modeling relationships between different types of data. The applications of graphs include modelling social media interactions , modelling maps for path optimizations, recommendation engines and more. Once a graph is constructed, there are a variety of algorithms that can be used to obtain information from them. In this project, we examine a special case known as graph coloring.
+	Graphs are useful data structures for modeling relationships between different types of data. The applications of graphs include modelling social media interactions , modelling maps for path optimizations, recommendation engines and more. Once a graph is constructed, there are a variety of algorithms that can be used to obtain information from them. In this project, we examine a special case known as graph coloring.
 
 The graph coloring problem is to assign colors to every vertex in theo graph such that no adjacent vertices have the same color assignment. The goal of this problem is to minimize the number of colors needed to color the graph. Graph coloring is NP-Complete which means there is no polynomial time algorithm for finding the optimal solution. Therefore, we explore approximations. 
 
 This project examines a Greedy approach, Welsh-Powell and a Genetic algorithm approach to obtaining a valid graph coloring for undirected graphs. All of these algorithms are approximations and do not guarantee optimal solutions. In the case of the genetic algorithm, it does not guarantee a solution at all. We will apply these algorithms to graphs that model university final exam scheduling.
+
 \section{DEFINITION OF THE PROBLEM}
 A graph is said to be colored if a color has been assigned to each vertex in such a way that adjacent vertices have different colors. And this process of assigning colors to the vertices of a graph is called graph coloring.
-
 Suppose we want to schedule some exams for SJSU students. The problem can be converted into a graph coloring problem. Given a graph G(V, E), in which the vertices V represent courses and two vertices are connected as an edge E if the corresponding courses have a student in common. Two connected vertices should be colored differently. As in exam scheduling, no student will be scheduled to take two course exams simultaneously. The objective of this problem is to find a complete solution that every course is assigned to a time slot and a room, and to minimize the total number of time periods, which is represented as the chromatic number of a graph.
 
 The objective of this problem is to find a complete solution that every course is assigned to a time slot and a room, and to minimize the total number of time periods / chromatic number of a graph.
+
 \section{ALGORITHM DESCRIPTIONS}
 \subsection*{Greedy}
 \begin{enumerate}
@@ -162,7 +163,7 @@ The above algorithms were implemented in python with use of the pandas library.
     \caption{Execution Flow}
 \end{figure}
 \section{RELATED WORK}
-Graph coloring is an NP-Complete problem, so there has been a lot of work done to find better algorithms and special cases. In this paper we implemented the standard Greedy Algorithm, Welsh-Powell and Genetic algorithm. In this project we specifically implement....NUMBER
+Graph coloring is an NP-Complete problem, so there has been a lot of work done to find better algorithms and special cases. In this project,  we implemented the standard Greedy Algorithm, Welsh-Powell and Genetic algorithm. ........................................................................NUMBER
 \section{DATA SETS USED}
 \begin{enumerate}
 \item This data is from the University of Nottingham, semester 1, 1994-95. There are 800 exams provided by 46 departments, and 7896 students. There are 33997 enrollments, so each student is sitting an average of 4.3 exams, and each exam is sat by an average of 42.5 students.
@@ -172,11 +173,11 @@ Graph coloring is an NP-Complete problem, so there has been a lot of work done t
 \section{ANALYSIS AND COMPARISON}
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|l|l|l|l|l|}
 \hline
-  & \bf{Greedy}  & \bf{Welsh-Powell} &  \bf{Genetic}  \\ \hline
-\makecell{\bf{Random Graph} \\ ($|V|$ = 800, $|E|$ = 12716)}\\  & \makecell{15}  & 13 &  -  \\ \hline
- \makecell{\bf{Exam Graph} \\ ($|V|$ = 800, $|E|$ = 11224)}\\ & 26  & 19 &  39  \\ \hline
+  Graph & Dimensions & \bf{Greedy}  & \bf{Welsh-Powell} &  \bf{Genetic}  \\ \hline
+\bf{Random Graph}  &($|V|$ = 800, $|E|$ = 12716)  & 15  & 13 &  -  \\ \hline
+ \bf{Exam Graph}  &($|V|$ = 800, $|E|$ = 11224) & 26  & 19 &  39  \\ \hline
 \end{tabular}
 \end{table}
 \section{EXPERIMENTAL RESULTS}
