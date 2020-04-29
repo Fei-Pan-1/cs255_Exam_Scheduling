@@ -198,7 +198,6 @@ class Graph(object):
         return True
             
 
-
 def random_tests():
     iterations = 10
     max_nodes = 200
@@ -240,16 +239,57 @@ def main():
     seed()
     #random_tests()
 
-    g = Graph.random_graph(5, .1)
-    print('Graph:\n', g.to_string())
+    # Experiment on Random Graph
+    g = Graph.random_graph(200, .4)
+    print('Random Graph:\n', g.to_string())
+    Graph.graph_info(g)
     coloring = Graph.greedy_coloring(g)
-    print('Greedy Solution: \n',coloring)
-    #print(str(len(g.vertices)))
-    #coloring1 = Graph.welsh_powell(g)
-    #print('Welsh Powell Solution: \n', coloring1)
+    print('Greedy Solution: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
+    # print(str(len(g.vertices)))
+    coloring1 = Graph.welsh_powell(g)
+    print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
     #cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
     #print(Graph.greedy_coloring(Graph.random_graph(5, .4)))
 
+    # Experiment on 3 Bipartite Graphs
+    bipartite1 = Graph(8)
+    edges = [(0,5),(0,6),(0,7),(1,4),(1,6),(1,7),(2,4),(2,5),(2,7),(3,4),(3,5),(3,6)]
+    for e in edges:
+        u, v = e
+        bipartite1.add_edge(u, v)
+    print("\n Bipartite Graph:\n", bipartite1.to_string())
+    Graph.graph_info(bipartite1)
+    coloring = Graph.greedy_coloring(bipartite1)
+    print('Greedy Solution for bipartite: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
+    coloring1 = Graph.welsh_powell(bipartite1)
+    print('Welsh Powell Solution for bipartite: \n', coloring1, '\n', max(coloring.values()) + 1, ' colors used.')
+
+    bipartite2 = Graph(8)
+    edges = [(0, 3), (0, 5), (0, 7), (2, 1), (2, 5), (2, 7), (4, 1), (4, 3), (4, 7), (6, 1), (6, 3), (6, 5)]
+    for e in edges:
+        u, v = e
+        bipartite2.add_edge(u, v)
+    print("\n Bipartite Graph with different index:\n", bipartite2.to_string())
+    Graph.graph_info(bipartite2)
+    coloring = Graph.greedy_coloring(bipartite2)
+    print('Greedy Solution for same bipartite but different index: \n', coloring, '\n', max(coloring.values()) + 1, ' colors used.')
+    coloring1 = Graph.welsh_powell(bipartite2)
+    print('Welsh Powell Solution for same bipartite but different index: \n', coloring1, '\n',  max(coloring.values()) + 1, ' colors used.')
+
+    bipartite3 = Graph(8)
+    edges = [(0, 1), (2, 3), (4, 5), (6, 7), (0, 3), (0, 5), (0, 7), (2, 1), (2, 5), (2, 7), (4, 1), (4, 3), (4, 7),
+             (6, 1), (6, 3), (6, 5)]
+    for e in edges:
+        u, v = e
+        bipartite3.add_edge(u, v)
+    print("\n Complete Bipartite Graph:\n", bipartite3.to_string())
+    Graph.graph_info(bipartite3)
+    coloring = Graph.greedy_coloring(bipartite3)
+    print('Greedy Solution for complete bipartite: \n', coloring, '\n', max(coloring.values()) + 1,
+          ' colors used.')
+    coloring1 = Graph.welsh_powell(bipartite3)
+    print('Welsh Powell Solution for complete bipartite: \n', coloring1, '\n',
+          max(coloring.values()) + 1, ' colors used.')
 
 if __name__ == '__main__':
     main()
