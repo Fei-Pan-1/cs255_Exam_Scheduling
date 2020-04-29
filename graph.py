@@ -266,6 +266,7 @@ def main():
     #print('Genetic Algorithm Solution: \n', coloring_genetic, '\n', n)
 
     # Experiment on 3 Bipartite Graphs
+    # Bipartite 1
     bipartite1 = Graph(8)
     edges = [(0,5),(0,6),(0,7),(1,4),(1,6),(1,7),(2,4),(2,5),(2,7),(3,4),(3,5),(3,6)]
     for e in edges:
@@ -278,6 +279,7 @@ def main():
     coloring1 = Graph.welsh_powell(bipartite1)
     print('Welsh Powell Solution for bipartite: \n', coloring1, '\n', max(coloring.values()) + 1, ' colors used.')
 
+    # Bipartite 2
     bipartite2 = Graph(8)
     edges = [(0, 3), (0, 5), (0, 7), (2, 1), (2, 5), (2, 7), (4, 1), (4, 3), (4, 7), (6, 1), (6, 3), (6, 5)]
     for e in edges:
@@ -290,6 +292,7 @@ def main():
     coloring1 = Graph.welsh_powell(bipartite2)
     print('Welsh Powell Solution for same bipartite but different index: \n', coloring1, '\n',  max(coloring.values()) + 1, ' colors used.')
 
+    # Bipartite 3
     bipartite3 = Graph(8)
     edges = [(0, 1), (2, 3), (4, 5), (6, 7), (0, 3), (0, 5), (0, 7), (2, 1), (2, 5), (2, 7), (4, 1), (4, 3), (4, 7),
              (6, 1), (6, 3), (6, 5)]
