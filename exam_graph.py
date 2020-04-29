@@ -50,13 +50,18 @@ print('Genetic Algorithm Solution for Exams: \n',genetic_coloring, '\n', used, '
 # Save welsh powell solution from dictionary to Dataframe
 df_solution = pd.DataFrame(coloring1.items(), columns=['eid', 'tid'])
 df_solution = df_solution.sort_values('eid').reset_index(drop=True)
+print('Welsh-Powell Solution:\n', df_solution)
 # df_solution.to_csv('dataset/results/solution.csv', index=False)
 
 
 wrong_color = 0
+wrong_color1 = 0
 for e in edges:
     u, v = e
     # print(coloring1[u], coloring1[v])
-    if coloring1[u] == coloring1[v]:
+    if coloring[u] == coloring[v]:
         wrong_color += 1
-print(wrong_color, 'wrong_color found for Welsh Powell solution')
+    if coloring1[u] == coloring1[v]:
+        wrong_color1 += 1
+print(wrong_color, 'wrong color found in Greedy solution.')
+print(wrong_color1, 'wrong color found in Welsh Powell solution.')

@@ -19,8 +19,8 @@ print(assigned_room)
 
 # add room column to solution
 df_solution['rid'] = assigned_room
-print(df_solution)
-# df_solution.to_csv('dataset/results/solution.csv', index=False)
+print('Solution with Assigned Room ID:\n', df_solution)
+# df_solution.to_csv('dataset/results/solution_with_roomID.csv', index=False)
 
 df_timetable_draft = pd.merge(df_exams, df_solution, on='eid')
 print(df_timetable_draft)
@@ -32,6 +32,7 @@ df_timetable.columns = ['Exam Id','Exam','Description','Department','Room','Star
 # reorder the columns
 df_timetable = df_timetable[['Exam Id','Exam','Description','Department','Start Time','End Time','Date','Room']]
 df_timetable = df_timetable.sort_values('Department').reset_index(drop=True)
-print(df_timetable)
+pd.options.display.max_columns = None,
+print('TimeTable (sorted by department):\n', df_timetable)
 
-df_timetable.to_csv('dataset/results/timetable.csv', index=False)
+# df_timetable.to_csv('dataset/results/timetable.csv', index=False)
