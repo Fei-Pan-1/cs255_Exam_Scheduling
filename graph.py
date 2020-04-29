@@ -124,10 +124,11 @@ class Graph(object):
         population_size = 50
         # the paper has this set to 20,000 but without further
         # optimization, it takes too long to execute
-        max_epochs = 20000
+        max_epochs = 2000
 
         #worst case, every vertex needs a color
-        colors = len(graph.vertices())
+        #colors = len(graph.vertices())
+        colors = 10
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
@@ -193,12 +194,19 @@ class Graph(object):
     
     @staticmethod
     def is_valid_solution(coloring, g):
-        wrong = 0
         for v in g.vertices():
             for edge in v.neighbors():
                 if(coloring[edge.source] == coloring[edge.target]):
                     return False
         return True
+
+    def count_bad_edges(self, coloring):
+        count = 0
+        for v in self.vertices():
+            for edge in v.neighbors():
+                if(coloring[edge.source] == coloring[edge.target]):
+                    count +=1
+        return count
 
 def random_tests():
     iterations = 10

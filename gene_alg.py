@@ -44,7 +44,9 @@ class GeneAlg(object):
         # once for updating the fitness and once for picking a random color.
         # To advoid this, I created this buffer and reuse it for the duration
         # of the program.
-        self.colors_buffer = [None] * gene*bits
+        #self.colors_buffer = [None] * gene*bits
+        self.colors_buffer = [None] * bits * 2
+        self.used_colors = [False] * graph.n_verticies
         
         # Used to get intersection of colors
         self.all_colors = set(i for i in range(0, gene))
@@ -88,14 +90,18 @@ class GeneAlg(object):
     def stop(self):
         self.busy = False
 
+#    def calculate_fitness(self, chromosome):
+#        bad_edges = 0
+#        for vertex in range(0, len(chromosome)):
+#            self.reset_used_colors()
+#            self.adjacent_colors(vertex, chromosome)
+#            for color in range(0, len(self.used_colors)):
+#                if(chromosome[vertex] == self.colors_buffer[color]):
+#                    bad_edges += 1
+#        return bad_edges
+
     def calculate_fitness(self, chromosome):
-        bad_edges = 0
-        for vertex in range(0, len(chromosome)):
-            n_adj_colors = self.adjacent_colors(vertex, chromosome)
-            for color in range(0, n_adj_colors):
-                if(chromosome[vertex] == self.colors_buffer[color]):
-                    bad_edges += 1
-        return bad_edges
+        return self.graph.count_bad_edges(chromosome)
 
     def update_fitness_score(self):
         self.fittest_genome = 0
@@ -223,25 +229,32 @@ class GeneAlg(object):
     # since I only care if a color occurs once. Using the buffer allows
     # me to avoid many many allocations.
 
+#    def adjacent_colors(self, vertex, coloring):
+#        neighbors = self.graph.neighbors_of(vertex)
+#        n_edges = len(neighbors)
+
+#        counter = 0
+#        for v in range(0, n_edges):
+#            self.colors_buffer[counter] = coloring[neighbors[v].target]
+#            counter += 1
+#        return n_edges
+
     def adjacent_colors(self, vertex, coloring):
         neighbors = self.graph.neighbors_of(vertex)
-        n_edges = len(neighbors)
+        for neighbor in neighbors:
+            self.used_colors[coloring[neighbor.target]] = True
 
-        counter = 0
-        for v in range(0, n_edges):
-            self.colors_buffer[counter] = coloring[neighbors[v].target]
-            counter += 1
-        return n_edges
+    def reset_used_colors(self):
+        for i in range(0, len(self.used_colors)):
+            self.used_colors[i] = False
 
-    def available_colors(self, adj_color_index):
-            coloring = [None] * adj_color_index
-            for i in range(0, adj_color_index):
-                coloring[i] = self.colors_buffer[i]
+    def available_colors(self):
+        diff = list()
+        for color in range(len(self.used_colors)):
+            if(self.used_colors[color] == False):
+                diff.append(color)
 
-            colors = self.all_colors.difference(coloring)
-
-            #colors = [value for value in self.colors_buffer if value in self.all_colors] 
-            return list(colors)
+            return diff
 
     def mutation1(self, chromosome):
         if(random() > self.mutation_rate):
@@ -250,20 +263,29 @@ class GeneAlg(object):
         coloring = chromosome
 
         # for each vertex in the chromosome
-        for vertex in range(0, self.chromosome_length):
+        for vertex in range(0, len(chromosome)):
             # if the vertex color has the same color as 
             # adjacent verticies
             if(self.has_adjacent_color(vertex, coloring)):
-                n_adj_colors = self.adjacent_colors(vertex, coloring)
-                colors_intersection = self.available_colors(n_adj_colors)
+                self.reset_used_colors()
+                #n_adj_colors = self.adjacent_colors(vertex, coloring)
+                #colors_intersection = self.available_colors(n_adj_colors)
+                self.adjacent_colors(vertex, coloring)
+                colors_intersection = self.available_colors()
 
                 # select a random color that is not an adjacent color
-                color_index = randint(0, len(colors_intersection))
-                if(len(colors_intersection) > 0 and color_index == len(colors_intersection)):
-                    color_index -= 1
-                if(len(colors_intersection) == 0):
-                    color_index = 0
-                coloring[vertex] = colors_intersection[color_index]
+                if(len(colors_intersection) > 0):
+                    color_index = randint(0, len(colors_intersection))
+                    if(color_index > 0):
+                        color_index -= 1
+                    coloring[vertex] = colors_intersection[color_index]
+                else:
+                    coloring[vertex] = 0
+#                if(len(colors_intersection) > 0 and color_index == len(colors_intersection)):
+#                    color_index -= 1
+#                if(len(colors_intersection) == 0):
+#                    color_index = 0
+#                coloring[vertex] = colors_intersection[color_index]
         return coloring
 
 
