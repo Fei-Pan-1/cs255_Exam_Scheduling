@@ -13,6 +13,7 @@
 \usepackage{titlesec}
 \doublespacing
 \usepackage{indentfirst}
+\usepackage{makecell}
 \sectionfont{\centering \normalsize \normalfont}
 \usepackage{tocloft}
 \renewcommand{\cftsecfont}{\normalsize \normalfont}
@@ -97,14 +98,89 @@
 \renewcommand{\baselinestretch}{1.5}
 
 \section{Introduction}
-aefawef
+Graphs are useful data structures for modeling relationships between different types of data. The applications of graphs include modelling social media interactions , modelling maps for path optimizations, recommendation engines and more. Once a graph is constructed, there are a variety of algorithms that can be used to obtain information from them. In this project, we examine a special case known as graph coloring.
+
+The graph coloring problem is to assign colors to every vertex in theo graph such that no adjacent vertices have the same color assignment. The goal of this problem is to minimize the number of colors needed to color the graph. Graph coloring is NP-Complete which means there is no polynomial time algorithm for finding the optimal solution. Therefore, we explore approximations. 
+
+This project examines a Greedy approach, Welsh-Powell and a Genetic algorithm approach to obtaining a valid graph coloring for undirected graphs. All of these algorithms are approximations and do not guarantee optimal solutions. In the case of the genetic algorithm, it does not guarantee a solution at all. We will apply these algorithms to graphs that model university final exam scheduling.
 \section{DEFINITION OF THE PROBLEM}
-\section{MATHEMATICAL DEFINITION}
+A graph is said to be colored if a color has been assigned to each vertex in such a way that adjacent vertices have different colors. And this process of assigning colors to the vertices of a graph is called graph coloring.
+
+Suppose we want to schedule some exams for SJSU students. The problem can be converted into a graph coloring problem. Given a graph G(V, E), in which the vertices V represent courses and two vertices are connected as an edge E if the corresponding courses have a student in common. Two connected vertices should be colored differently. As in exam scheduling, no student will be scheduled to take two course exams simultaneously. The objective of this problem is to find a complete solution that every course is assigned to a time slot and a room, and to minimize the total number of time periods, which is represented as the chromatic number of a graph.
+
+The objective of this problem is to find a complete solution that every course is assigned to a time slot and a room, and to minimize the total number of time periods / chromatic number of a graph.
+\section{ALGORITHM DESCRIPTIONS}
+\subsection*{Greedy}
+\begin{enumerate}
+	\item Select the first vertex and make it the first color
+	\item For each vertex in the graph
+	\begin{enumerate}
+		\item Visit each neighbor and take note of the colors assigned to the neighbors
+		\item Pick the first color that isn't assigned to a neighbor
+	\end{enumerate}
+\end{enumerate}
+
+\subsection{Welsh-Powell}
+
+\begin{enumerate}
+\item Find the degree of each vertex
+\item List the vertices in order of descending degrees.
+\item Color the first vertex with color 1.
+\item Move down the list and color all the vertices not connected to the colored vertex, with the same color.
+\item Repeat step (1) on all uncolored vertices with a new color, in descending order of degrees until all the vertices are coloured.
+\end{enumerate}
+
+\subsection{Genetic Algorithm}
+\begin{enumerate}
+\item Create an initial population of genomes (randomly or not)
+\item While Fitness is not 0 and we have not reached 20,000 iterations
+\begin{enumerate}
+	\item For each genome, do the following
+	\begin{enumerate}
+		\item Update its fitness score based on the number of bad edges
+		\item If we have an optimal fitness score, stop the program
+	\end{enumerate}
+	\item Select two parents and do the following
+	\begin{enumerate}
+		\item Crossover the parents to make a new child
+	\end{enumerate}
+	\item Mutate the child
+	\item Place the child in the population
+	\item Place the fitter of the two parents into the population (this wasn’t specified, it’s just how I decided to do it)
+\item If we reach 20,000 iteration, stop and perform wisdomOfTheArtificialCrowds
+\end{enumerate}
+\end{enumerate}
+
+In this algorithm, a genome holds a chromosome and an associated fitness score. The chromosome is an array based representation of the coloring of the graph. The position in the array represents the vertex in the graph while the value at the position is the assigned color for that vertex. “Bad edges” are defined as edges between vertices of the same color. Parent selection is done by either selecting the top two performing genomes in the population or by randomly selecting two genomes from the population. Mutation is done by looking at a chromosome and looking and taking each position as a vertex. We get the neighbors of the vertex and keep track of what colors are used. At the end, the vertex gets assigned a random color out of the difference of AllColors - usedColors. In other words, pick a random color that isn’t used by any of the neighbors. WisdomOfTheArtificialCrowds is performed by taking the top performing chromosome and looking at its bad edges. Then you take the top 50$\%$ of performers and take a majority vote on what color they use that works. Then we assign that color for the vertex in the top performer. The size of the population, mutation rate and number of iterations were experimentally chosen.	
+
+
 \section{IMPLEMENTATION DETAILS}
+The above algorithms were implemented in python with use of the pandas library.
+\begin{figure}[H]
+\centering
+        \includegraphics[scale=.35]{imp.png}
+    \caption{Execution Flow}
+\end{figure}
 \section{RELATED WORK}
+Graph coloring is an NP-Complete problem, so there has been a lot of work done to find better algorithms and special cases. In this paper we implemented the standard Greedy Algorithm, Welsh-Powell and Genetic algorithm. In this project we specifically implement....NUMBER
 \section{DATA SETS USED}
+\begin{enumerate}
+\item This data is from the University of Nottingham, semester 1, 1994-95. There are 800 exams provided by 46 departments, and 7896 students. There are 33997 enrollments, so each student is sitting an average of 4.3 exams, and each exam is sat by an average of 42.5 students.
+
+\item Graphs randomly generated by following the Erdős–Rényi model. This algorithm works by selecting the number of vertices and a probability of them being connected. Then I generated a random number and if it was less than or equal to the probability, then I added an edge between the vertices.
+\end{enumerate}
 \section{ANALYSIS AND COMPARISON}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+  & \bf{Greedy}  & \bf{Welsh-Powell} &  \bf{Genetic}  \\ \hline
+\makecell{\bf{Random Graph} \\ ($|V|$ = 800, $|E|$ = 12716)}\\  & \makecell{15}  & 13 &  -  \\ \hline
+ \makecell{\bf{Exam Graph} \\ ($|V|$ = 800, $|E|$ = 11224)}\\ & 26  & 19 &  39  \\ \hline
+\end{tabular}
+\end{table}
 \section{EXPERIMENTAL RESULTS}
+
 \section{FURTHER DISCUSSION}
 \subsection{Genetic Algorithm}
 The genetic algorithm presented in the paper has some interesting properties. The optimal fitness score is defined to be 0, since that would mean there are no conflicting edges.  The authors present two different parent selection and mutation functions in an attempt to converge as quickly as possible. Despite trying to implement those functions, I was unable to reproduce the same benchmarks that were presented in the paper. However, I did try various ideas and with some fine tuning, I managed to get fairly decent performance. One problem that I currently have with it is the execution speed. Python isn't particularly fast, but I also am not familiar enough with the language to be able to optimize it enough. After profiling the code, I found that the bottleneck is from constantly getting the colors of adjacent edges. This also explains why the algorithm struggles with densely connected graphs.

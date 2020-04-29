@@ -1,12 +1,14 @@
 \contentsline {section}{\numberline {I. }Introduction}{1}% 
 \contentsline {section}{\numberline {II. }DEFINITION OF THE PROBLEM}{1}% 
-\contentsline {section}{\numberline {III. }MATHEMATICAL DEFINITION}{1}% 
-\contentsline {section}{\numberline {IV. }IMPLEMENTATION DETAILS}{1}% 
-\contentsline {section}{\numberline {V. }RELATED WORK}{1}% 
-\contentsline {section}{\numberline {VI. }DATA SETS USED}{1}% 
-\contentsline {section}{\numberline {VII. }ANALYSIS AND COMPARISON}{1}% 
-\contentsline {section}{\numberline {VIII. }EXPERIMENTAL RESULTS}{1}% 
-\contentsline {section}{\numberline {IX. }FURTHER DISCUSSION}{1}% 
-\contentsline {subsection}{\numberline {A.}Genetic Algorithm}{1}% 
-\contentsline {section}{\numberline {X. }CONCLUSION}{2}% 
-\contentsline {section}{References}{3}% 
+\contentsline {section}{\numberline {III. }ALGORITHM DESCRIPTIONS}{1}% 
+\contentsline {subsection}{\numberline {A.}Welsh-Powell}{2}% 
+\contentsline {subsection}{\numberline {B.}Genetic Algorithm}{2}% 
+\contentsline {section}{\numberline {IV. }IMPLEMENTATION DETAILS}{3}% 
+\contentsline {section}{\numberline {V. }RELATED WORK}{4}% 
+\contentsline {section}{\numberline {VI. }DATA SETS USED}{4}% 
+\contentsline {section}{\numberline {VII. }ANALYSIS AND COMPARISON}{4}% 
+\contentsline {section}{\numberline {VIII. }EXPERIMENTAL RESULTS}{4}% 
+\contentsline {section}{\numberline {IX. }FURTHER DISCUSSION}{4}% 
+\contentsline {subsection}{\numberline {A.}Genetic Algorithm}{4}% 
+\contentsline {section}{\numberline {X. }CONCLUSION}{6}% 
+\contentsline {section}{References}{7}% 
