@@ -50,7 +50,7 @@ print('Genetic Algorithm Solution for Exams: \n',genetic_coloring, '\n', used, '
 # Save welsh powell solution from dictionary to Dataframe
 df_solution = pd.DataFrame(coloring1.items(), columns=['eid', 'tid'])
 df_solution = df_solution.sort_values('eid').reset_index(drop=True)
-print('Welsh-Powell Solution:\n', df_solution)
+print('Solution from Welsh-Powell:\n', df_solution)
 # df_solution.to_csv('dataset/results/solution.csv', index=False)
 
 
