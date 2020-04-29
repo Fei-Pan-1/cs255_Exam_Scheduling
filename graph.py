@@ -252,7 +252,7 @@ def main():
     #random_tests()
 
     # Experiment on Random Graph
-    g = Graph.random_graph(200, .4)
+    g = Graph.random_graph(800, .02)
     print('Random Graph:\n', g.to_string())
     Graph.graph_info(g)
     coloring = Graph.greedy_coloring(g)
@@ -283,8 +283,8 @@ def main():
     for e in edges:
         u, v = e
         bipartite2.add_edge(u, v)
-    print("\n Bipartite Graph with different index:\n", bipartite2.to_string())
-    Graph.graph_info(bipartite2)
+    # print("\n Bipartite Graph with different index:\n", bipartite2.to_string())
+    # Graph.graph_info(bipartite2)
     coloring = Graph.greedy_coloring(bipartite2)
     print('Greedy Solution for same bipartite but different index: \n', coloring, '\n', max(coloring.values()) + 1, ' colors used.')
     coloring1 = Graph.welsh_powell(bipartite2)
@@ -296,7 +296,7 @@ def main():
     for e in edges:
         u, v = e
         bipartite3.add_edge(u, v)
-    print("\n Complete Bipartite Graph:\n", bipartite3.to_string())
+    # print("\n Complete Bipartite Graph:\n", bipartite3.to_string())
     Graph.graph_info(bipartite3)
     coloring = Graph.greedy_coloring(bipartite3)
     print('Greedy Solution for complete bipartite: \n', coloring, '\n', max(coloring.values()) + 1,
@@ -304,6 +304,7 @@ def main():
     coloring1 = Graph.welsh_powell(bipartite3)
     print('Welsh Powell Solution for complete bipartite: \n', coloring1, '\n',
           max(coloring.values()) + 1, ' colors used.')
+
 
 if __name__ == '__main__':
     main()
