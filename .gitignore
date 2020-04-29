@@ -26,7 +26,8 @@ hs_err_pid*
 .DS_Store
 .idea/
 venv/
-
+Java
+__pycache__
 
 
 #python
