@@ -56,6 +56,7 @@ print('Solution from Welsh-Powell:\n', df_solution)
 
 wrong_color = 0
 wrong_color1 = 0
+wrong_color2 = 0
 for e in edges:
     u, v = e
     # print(coloring1[u], coloring1[v])
@@ -63,5 +64,8 @@ for e in edges:
         wrong_color += 1
     if coloring1[u] == coloring1[v]:
         wrong_color1 += 1
+    if genetic_coloring[u] == genetic_coloring[v]:
+        wrong_color2 += 1
 print(wrong_color, 'wrong color found in Greedy solution.')
 print(wrong_color1, 'wrong color found in Welsh Powell solution.')
+print(wrong_color1, 'wrong color found in Genetic solution.')
