@@ -176,13 +176,38 @@ Graph coloring is an NP-Complete problem, so there has been a lot of work done t
 \begin{tabular}{|l|l|l|l|l|}
 \hline
   Graph & Dimensions & \bf{Greedy}  & \bf{Welsh-Powell} &  \bf{Genetic}  \\ \hline
+  \bf{Random Graph}  &($|V|$ = 5, $|E|$ = 9)  & 4  & 4 &  -  \\ \hline
 \bf{Random Graph}  &($|V|$ = 800, $|E|$ = 12716)  & 15  & 13 &  -  \\ \hline
  \bf{Exam Graph}  &($|V|$ = 800, $|E|$ = 11224) & 26  & 19 &  39  \\ \hline
 \end{tabular}
 \end{table}
 \section{EXPERIMENTAL RESULTS}
+\subsection{Bipartite Graphs}
+\begin{figure}[H]
+\centering
+        \includegraphics[scale=.35]{bipartite_coloring.png}
+    \caption{Bipartite Graphs}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+  Graph & Dimensions & \bf{Greedy}  & \bf{Welsh-Powell} &  \bf{Genetic}  \\ \hline
+  \bf{Bipartite Graph}  &($|V|$ = 8, $|E|$ = 12)  &2  & 2 &  -  \\ \hline
+\bf{Bipartite Graph with Different index}  &($|V|$ = 8, $|E|$ = 12)  & 4  & 4 &  -  \\ \hline
+ \bf{Complete Bipartite Graph}  &($|V|$ = 8, $|E|$ = 16) & 2  & 2 &  -  \\ \hline
+\end{tabular}
+\end{table}
 
 \section{FURTHER DISCUSSION}
+\subsection{Exam Scheduling}
+\subsubsection{Decrease Rooms}
+Since there are only 19 time slots (5 days) used. We can add 5 more days so that at least half of the rooms can be decreased.
+
+\subsubsection{Limit exams}
+Limit the numbers of exams per day per student, so that there are no more than 2 exams for each student.
+
 \subsection{Genetic Algorithm}
 \subsubsection{Implementation}
 The Genetic Algorithm essentially tried to apply a modified version of the Greedy algorithm at random starting points and continually building a better graph over the generations. The initial population starts at random and when the top performing parents are selected, the child inherits their good and bad choices. This is call the crossover stage. At the next stage, the mutation stage, step (2a) from Section III is performed. The difference is that the Greedy approach picks the first best color, whereas the Genetic Algorithm picks a random "best" color. This seems like a randomized Greedy approach. by having a population size of $50$, we are performing these operations on $50$ graphs, each with a random starting point. With the help of randomness and best performing parents, hopefully some of the graphs converge to a solution.
