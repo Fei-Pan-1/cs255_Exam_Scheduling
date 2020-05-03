@@ -44,6 +44,8 @@ print('Greedy Solution for Exams: \n',coloring, '\n', max(coloring.values()) + 1
 # print(str(len(g.vertices)))
 coloring1 = Graph.welsh_powell(graph)
 print('Welsh Powell Solution for Exams: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
+
+print('Beginning Genetic Algorithm: \n')
 used, genetic_coloring = Graph.genetic_algorithm(graph, 38)
 print('Genetic Algorithm Solution for Exams: \n',genetic_coloring, '\n', used, ' colors used.')
 
