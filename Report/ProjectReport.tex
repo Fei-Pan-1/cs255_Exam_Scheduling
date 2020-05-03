@@ -97,7 +97,7 @@
 \setlength{\parindent}{4em}
 \renewcommand{\baselinestretch}{1.5}
 
-\section{Introduction}
+\section{INTRODUCTION}
 	Graphs are useful data structures for modeling relationships between different types of data. The applications of graphs include modelling social media interactions , modelling maps for path optimizations, recommendation engines and more. Once a graph is constructed, there are a variety of algorithms that can be used to obtain information from them. In this project, we examine a special case known as graph coloring.
 
 The graph coloring problem is to assign colors to every vertex in theo graph such that no adjacent vertices have the same color assignment. The goal of this problem is to minimize the number of colors needed to color the graph. Graph coloring is NP-Complete which means there is no polynomial time algorithm for finding the optimal solution. Therefore, we explore approximations. 
@@ -184,6 +184,13 @@ Graph coloring is an NP-Complete problem, so there has been a lot of work done t
 
 \section{FURTHER DISCUSSION}
 \subsection{Genetic Algorithm}
+\subsubsection{Implementation}
+The Genetic Algorithm essentially tried to apply a modified version of the Greedy algorithm at random starting points and continually building a better graph over the generations. The initial population starts at random and when the top performing parents are selected, the child inherits their good and bad choices. This is call the crossover stage. At the next stage, the mutation stage, step (2a) from Section III is performed. The difference is that the Greedy approach picks the first best color, whereas the Genetic Algorithm picks a random "best" color. This seems like a randomized Greedy approach. by having a population size of $50$, we are performing these operations on $50$ graphs, each with a random starting point. With the help of randomness and best performing parents, hopefully some of the graphs converge to a solution.
+
+\subsubsection{Implementation Limitations}
+All of our code is written in python and we developed this algorithm over many iterations. The main problem with the Genetic Algorithm is the time requirements to converge upon a solution. One problem that we ran into was having to reallocate memory for every chromosome for every generation. After some profiling and modifications, we managed to optimize this problem out. The main contributing slowdown to this program is the $adjacent\_colors()$ method, which must iterate over every vertex and it's neighbors in order to mutate the chromosome. If this could be sped up, the Genetic Algorithm could potentially perform better. The numbers of colors presented in this report for the exam graph is usually done within a few seconds. However, in cases of trying to use a smaller number of colors, the algorithm slows down, but the fitness score does in fact continue to tend towards optimal. This leads me to suspect that a better coloring can be obtained at the cost of more time.
+
+\subsubsection{Parameter Tuning}
 The genetic algorithm presented in the paper has some interesting properties. The optimal fitness score is defined to be 0, since that would mean there are no conflicting edges.  The authors present two different parent selection and mutation functions in an attempt to converge as quickly as possible. Despite trying to implement those functions, I was unable to reproduce the same benchmarks that were presented in the paper. However, I did try various ideas and with some fine tuning, I managed to get fairly decent performance. One problem that I currently have with it is the execution speed. Python isn't particularly fast, but I also am not familiar enough with the language to be able to optimize it enough. After profiling the code, I found that the bottleneck is from constantly getting the colors of adjacent edges. This also explains why the algorithm struggles with densely connected graphs.
 
 There are some details left out of the paper as well. For example, they talk about parent selection, crossover, mutation and then adding the child to the population. However, they only add one child to the population while also mentioning that the population size should be constant. Therefore, I either need to repeat the process with another child so that I can replace both parents, or leave a parent in the population. I experimented with both. Creating two children made the fitness scores more erratic. This could potentially be beneficial since there is more exploration, but it seemed to converge onto a pattern. I think this would be a more feasible option if there was more randomness in play. The other option I explored was to take the fittest of the parents and put that parent back into the population. This had the effect of a slow, but steady decrease in the fitness score.
@@ -198,6 +205,9 @@ Some other variables that I changed were the population size, mutation rate and 
 
 Finally, I found that a mutation rate of 0.8 with a crossover rate of 1.0, population size of 50 and between 37-40 colors converges in a reasonable amount of time. However, the genetic algorithm performs poorly on random graphs since I can't really fine tune the parameters. So one of the downfalls of the genetic algorithm is that it sometimes requires fine tuning the parameters for specific examples.
 \section{CONCLUSION}
+In this paper we experimented with three graph coloring algorithms as applied to exam scheduling. Our tests have indicated that Welsh-Powell performs the best in term of speed and less number of colors. The Greedy approach performs  the next best. The Genetic Algorithm, although interesting, did not perform as well for us. Solutions can be arrived at quickly if given enough colors, but it does not perform as well as Welsh-Powell or Greedy. The main take away from the Genetic Algorithm is that good performance requires tuning the parameters. For this reason, the Genetic Algorithm performs poorly on random graphs without tuning the parameters. This is specific to each problem, so the applications of the Genetic Algorithm approach must be specific to the problem as well for best results. 
+
+
 \newpage
 \section*{References}
 \addcontentsline{toc}{section}{References}%
