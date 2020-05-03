@@ -1,6 +1,7 @@
 from itertools import combinations
 import pandas as pd
 from graph import Graph
+import time
 
 # Put each student and his exams in a dictionary.
 # Student id is the key and a set of all exams of each student is the value.
@@ -39,14 +40,21 @@ for e in edges:
     graph.add_edge(u, v)
 
 print(graph.to_string())
+
+start_time = time.time()
 coloring = Graph.greedy_coloring(graph)
+greedy_time = (time.time() - start_time)
 print('Greedy Solution for Exams: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
-# print(str(len(g.vertices)))
+
+start_time = time.time()
 coloring1 = Graph.welsh_powell(graph)
+welsh_time = (time.time() - start_time)
 print('Welsh Powell Solution for Exams: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
 
 print('Beginning Genetic Algorithm: \n')
+start_time = time.time()
 used, genetic_coloring = Graph.genetic_algorithm(graph, 38)
+genetic_time = (time.time() - start_time)
 print('Genetic Algorithm Solution for Exams: \n',genetic_coloring, '\n', used, ' colors used.')
 
 # Save welsh powell solution from dictionary to Dataframe
@@ -55,6 +63,9 @@ df_solution = df_solution.sort_values('eid').reset_index(drop=True)
 print('Solution from Welsh-Powell:\n', df_solution)
 # df_solution.to_csv('dataset/results/solution.csv', index=False)
 
+print('Greedy Finished in ', greedy_time, ' seconds')
+print('Welsh-Powell Finished in ', welsh_time, ' seconds')
+print('Gentic Finished in ', genetic_time, ' seconds\n')
 
 wrong_color = 0
 wrong_color1 = 0
