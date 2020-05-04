@@ -251,7 +251,7 @@ class GeneAlg(object):
                 colors_difference = self.available_colors()
 
                 # select a random color that is not an adjacent color
-                if(len(colors_intersection) > 0):
+                if(len(colors_difference) > 0):
                     color_index = randint(0, len(colors_difference))
                     if(color_index > 0):
                         color_index -= 1
