@@ -248,14 +248,14 @@ class GeneAlg(object):
             if(self.has_adjacent_color(vertex, coloring)):
                 self.reset_used_colors()
                 self.adjacent_colors(vertex, coloring)
-                colors_intersection = self.available_colors()
+                colors_difference = self.available_colors()
 
                 # select a random color that is not an adjacent color
                 if(len(colors_intersection) > 0):
-                    color_index = randint(0, len(colors_intersection))
+                    color_index = randint(0, len(colors_difference))
                     if(color_index > 0):
                         color_index -= 1
-                    coloring[vertex] = colors_intersection[color_index]
+                    coloring[vertex] = colors_difference[color_index]
                 else:
                     coloring[vertex] = 0
         return coloring
