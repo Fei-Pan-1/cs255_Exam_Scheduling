@@ -288,6 +288,8 @@ def main():
     print('Greedy Solution for bipartite: \n',coloring, '\n', max(coloring.values()) + 1, ' colors used.')
     coloring1 = Graph.welsh_powell(bipartite1)
     print('Welsh Powell Solution for bipartite: \n', coloring1, '\n', max(coloring.values()) + 1, ' colors used.')
+    used, genetic_coloring = Graph.genetic_algorithm(bipartite1, 2)
+    print('Genetic Algorithm Solution for bipartite: \n', genetic_coloring, '\n', used, ' colors used')
 
     # Bipartite 2
     bipartite2 = Graph(8)
@@ -301,6 +303,8 @@ def main():
     print('Greedy Solution for same bipartite but different index: \n', coloring, '\n', max(coloring.values()) + 1, ' colors used.')
     coloring1 = Graph.welsh_powell(bipartite2)
     print('Welsh Powell Solution for same bipartite but different index: \n', coloring1, '\n',  max(coloring.values()) + 1, ' colors used.')
+    used, genetic_coloring = Graph.genetic_algorithm(bipartite1, 4)
+    print('Genetic Algorithm Solution for bipartite: \n', genetic_coloring, '\n', used, ' colors used')
 
     # Bipartite 3
     bipartite3 = Graph(8)
@@ -317,6 +321,8 @@ def main():
     coloring1 = Graph.welsh_powell(bipartite3)
     print('Welsh Powell Solution for complete bipartite: \n', coloring1, '\n',
           max(coloring.values()) + 1, ' colors used.')
+    used, genetic_coloring = Graph.genetic_algorithm(bipartite1, 2)
+    print('Genetic Algorithm Solution for bipartite: \n', genetic_coloring, '\n', used, ' colors used')
 
 
 if __name__ == '__main__':
