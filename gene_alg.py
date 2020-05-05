@@ -9,7 +9,7 @@ class Genome(object):
         self.fitness = INFINITY
         self.coloring = [None] * n_vertices
 
-        if(random):
+        if random:
             for i in range(0, n_vertices):
                 self.coloring[i] = randint(1, n_colors) -1
 
@@ -102,11 +102,11 @@ class GeneAlg(object):
             chromosome = self.genomes[i].coloring
             self.genomes[i].fitness = self.calculate_fitness(chromosome)
 
-            if(self.genomes[i].fitness < self.best_fitness_score):
+            if self.genomes[i].fitness < self.best_fitness_score:
                 self.best_fitness_score = self.genomes[i].fitness
                 self.fittest_genome = i
 
-            if(self.genomes[i].fitness == 0):
+            if self.genomes[i].fitness == 0:
                 self.busy = False
             
     def create_start_population(self):
@@ -137,7 +137,7 @@ class GeneAlg(object):
         counter = 0
         chromosome = [None] * self.chromosome_length
         while(noobs < self.population_size):
-            if(self.best_fitness_score > SELECTION_MUTTION_THRESHOLD):
+            if self.best_fitness_score > SELECTION_MUTTION_THRESHOLD:
                 parents = self.parent_selection1()
                 crossed_chromosome = self.crossover(parents[0], parents[1], chromosome)
                 mutated_chromosome = self.mutation1(crossed_chromosome)
@@ -164,7 +164,7 @@ class GeneAlg(object):
         self.generation += 1
 
     def max_fitness(self, g1, g2):
-        if(g1.fitness < g2.fitness):
+        if g1.fitness < g2.fitness:
             return g1
         return g2
 
@@ -192,7 +192,7 @@ class GeneAlg(object):
         second = 0
         best_so_far = INFINITY
         for i in range(0, self.population_size):
-            if(self.genomes[i].fitness < best_so_far):
+            if self.genomes[i].fitness < best_so_far:
                 best_so_far = self.genomes[i].fitness
                 second = first
                 first = i
@@ -210,7 +210,7 @@ class GeneAlg(object):
     def has_adjacent_color(self, vertex, coloring):
         neighbors = self.graph.neighbors_of(vertex)
         for edge in neighbors:
-            if(coloring[edge.source] == coloring[edge.target]):
+            if coloring[edge.source] == coloring[edge.target]:
                 return True
         return False
 
@@ -221,7 +221,7 @@ class GeneAlg(object):
         neighbors = self.graph.neighbors_of(vertex)
 
         for edge in neighbors:
-            if(coloring[edge.source] == coloring[edge.target]):
+            if coloring[edge.source] == coloring[edge.target]:
                 self.used_colors[coloring[edge.target]] = True
 
     def reset_used_colors(self):
@@ -231,12 +231,12 @@ class GeneAlg(object):
     def available_colors(self):
         diff = set()
         for color in range(0, len(self.used_colors)):
-            if(self.used_colors[color] == False):
+            if self.used_colors[color] == False:
                 diff.add(color)
         return list(diff)
 
     def mutation1(self, chromosome):
-        if(random() > self.mutation_rate):
+        if random() > self.mutation_rate:
             return chromosome
 
         coloring = chromosome
@@ -245,15 +245,15 @@ class GeneAlg(object):
         for vertex in range(0, len(chromosome)):
             # if the vertex color has the same color as 
             # adjacent verticies
-            if(self.has_adjacent_color(vertex, coloring)):
+            if self.has_adjacent_color(vertex, coloring):
                 self.reset_used_colors()
                 self.adjacent_colors(vertex, coloring)
                 colors_difference = self.available_colors()
 
                 # select a random color that is not an adjacent color
-                if(len(colors_difference) > 0):
+                if len(colors_difference) > 0:
                     color_index = randint(0, len(colors_difference))
-                    if(color_index > 0):
+                    if color_index > 0:
                         color_index -= 1
                     coloring[vertex] = colors_difference[color_index]
                 else:
@@ -263,7 +263,7 @@ class GeneAlg(object):
 
 
     def mutation2(self, chromosome):
-        if(random() > self.mutation_rate):
+        if random() > self.mutation_rate:
             return chromosome
 
         coloring = chromosome
@@ -272,7 +272,7 @@ class GeneAlg(object):
         for vertex in range(0, self.chromosome_length):
             # if vertex color has the same color as
             # adjacent colors
-            if(self.has_adjacent_color(vertex, coloring)):
+            if self.has_adjacent_color(vertex, coloring):
                 # pick a random color and update
                 color = randint(0, self.gene_length-1)
                 coloring[vertex] = color
@@ -281,13 +281,13 @@ class GeneAlg(object):
 
 
     def crossover(self, parent1, parent2, chromosome):
-        if(random() > self.crossover_rate):
+        if random() > self.crossover_rate:
             return parent1.coloring
 
         crosspoint = randint(0, self.chromosome_length-1)
 
         for v in range(0, self.chromosome_length):
-            if(v <= crosspoint):
+            if v <= crosspoint:
                 chromosome[v] = parent1.coloring[v]
             else:
                 chromosome[v] = parent2.coloring[v]
@@ -298,7 +298,7 @@ class GeneAlg(object):
         counts = {}
         for i in range(0, len(population)):
             color = population[i].coloring[vertex]
-            if(color in counts):
+            if color in counts:
                 counts[color] += 1
             else:
                 counts[color] = 0
@@ -307,7 +307,7 @@ class GeneAlg(object):
         highest_key = 0
         highest_val = 0
         for k, v in counts.items():
-            if(v >= highest_val):
+            if v >= highest_val:
                 highest_val = v
                 highest_key = k
         return highest_key
@@ -327,7 +327,7 @@ class GeneAlg(object):
 
         coloring = aggregate.coloring
         for v in range(0, self.chromosome_length):
-            if(self.has_adjacent_color(v, coloring)):
+            if self.has_adjacent_color(v, coloring):
                 # vertex is part of a bad edge, get consensus, and assign
                 color = self.form_consensus(v, experts)
                 coloring[v] = color

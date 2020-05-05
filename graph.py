@@ -31,7 +31,7 @@ class VertexNode(object):
 
     def contains(self, target):
         for edge in self.edges:
-            if(edge.target == target):
+            if edge.target == target:
                 return True
         return False
 
@@ -80,8 +80,8 @@ class Graph(object):
 
         for v1 in range(0, n):
             for v2 in range(0, n):
-                if(v1 != v2 and random() < probability_threshold):
-                    if(operator.not_(graph.vertex(v1).contains(v2)) and operator.not_(graph.vertex(v2).contains(v1))):
+                if v1 != v2 and random() < probability_threshold:
+                    if operator.not_(graph.vertex(v1).contains(v2)) and operator.not_(graph.vertex(v2).contains(v1)):
                         graph.add_edge(v1, v2)
         return graph
     
@@ -95,12 +95,12 @@ class Graph(object):
 
         for v in graph.vertices():
             for neighbor in v.neighbors():
-                if(neighbor.target in coloring):
+                if neighbor.target in coloring:
                     # this is an adjacent node with same color
                     available_colors[coloring[neighbor.target]] = TAKEN
             # assign the first available color
             for color in range(0, len(available_colors)):
-                if(available_colors[color] == NOT_TAKEN):
+                if available_colors[color] == NOT_TAKEN:
                     coloring[v.vertex] = color
                     break
 
@@ -123,8 +123,7 @@ class Graph(object):
         mutation_rate = 0.8
         crossover_rate = 1.0
         population_size = 50
-        # the paper has this set to 20,000 but without further
-        # optimization, it takes too long to execute
+        # the paper has this set to 20,000 
         max_epochs = 20000
 
         #worst case, every vertex needs a color
@@ -132,15 +131,10 @@ class Graph(object):
 
         genetic = GeneAlg(crossover_rate, mutation_rate, population_size, graph.n_verticies, colors, graph)
         genetic.run()
-        #counter = 0
         while(genetic.started() and genetic.generations() < max_epochs):
             genetic.epoch()
-            #counter += 1
-            #if(counter == 100):
-                #print("Generation: " + str(genetic.generations()))
-                #counter = 0
 
-        if(genetic.generations() >= max_epochs):
+        if genetic.generations() >= max_epochs:
             print("Failed to Converge. Seeking wisdom of the crowds")
             coloring = genetic.wisdom_of_artificial_crowds()
             return genetic.n_colors_used(), coloring
@@ -198,7 +192,7 @@ class Graph(object):
     def is_valid_solution(coloring, g):
         for v in g.vertices():
             for edge in v.neighbors():
-                if(coloring[edge.source] == coloring[edge.target]):
+                if coloring[edge.source] == coloring[edge.target]:
                     return False
         return True
 
@@ -206,7 +200,7 @@ class Graph(object):
         count = 0
         for v in self.vertices():
             for edge in v.neighbors():
-                if(coloring[edge.source] == coloring[edge.target]):
+                if coloring[edge.source] == coloring[edge.target]:
                     count +=1
         return count
 
@@ -231,15 +225,15 @@ def random_tests():
         Graph.graph_info(g)
 
         greedy_coloring = Graph.greedy_coloring(g)
-        if(Graph.is_valid_solution(greedy_coloring, g)):
+        if Graph.is_valid_solution(greedy_coloring, g):
             correct_solutions[GREEDY] += 1
 
         wp_coloring = Graph.welsh_powell(g)
-        if(Graph.is_valid_solution(wp_coloring, g)):
+        if Graph.is_valid_solution(wp_coloring, g):
             correct_solutions[WP] += 1
 
         genetic_coloring = Graph.genetic_algorithm(g, 38)
-        if(Graph.is_valid_solution(genetic_coloring, g)):
+        if Graph.is_valid_solution(genetic_coloring, g):
             correct_solutions[GENETIC] += 1
 
     print("Greedy: " + str(correct_solutions[GREEDY])+ "/" + str(iterations))
@@ -260,10 +254,6 @@ def main():
     # print(str(len(g.vertices)))
     coloring1 = Graph.welsh_powell(g)
     print('Welsh Powell Solution: \n', coloring1, '\n', max(coloring1.values()) + 1, ' colors used.')
-    #cProfile.run('Graph.genetic_algorithm(Graph.random_graph(65, .2))')
-    #print(Graph.greedy_coloring(Graph.random_graph(5, .4)))
-    #n, coloring_genetic = Graph.genetic_algorithm(g, 85)
-    #print('Genetic Algorithm Solution: \n', coloring_genetic, '\n', n)
 
     # Experiment on  Random Graph
     g = Graph.random_graph(800, .02)
